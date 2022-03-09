@@ -1,0 +1,37 @@
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+CREATE TABLE IF NOT EXISTS users (
+  id UUID DEFAULT uuid_generate_v4(),
+	first_name VARCHAR(100) NOT NULL,
+	last_name VARCHAR(100) NOT NULL,
+  email VARCHAR(100) NOT NULL UNIQUE,
+	password VARCHAR(300) NOT NULL,
+  activation_link VARCHAR(300) NOT NULL,
+	activated BOOLEAN DEFAULT false NOT NULL,
+	created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
+
+  PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS tokens (
+  id UUID DEFAULT uuid_generate_v4(),
+  user_id UUID,
+	access_token VARCHAR(300) NOT NULL,
+	refresh_token VARCHAR(300) NOT NULL,
+	created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
+
+  PRIMARY KEY (id, user_id),
+  FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS birthday_people (
+  id UUID DEFAULT uuid_generate_v4(),
+  user_id UUID,
+	first_name VARCHAR(100) NOT NULL,
+	last_name VARCHAR(100) NOT NULL,
+  birth_date DATE NOT NULL,
+	created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
+
+  PRIMARY KEY (id, user_id),
+  FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+);
