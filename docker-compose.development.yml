@@ -1,0 +1,29 @@
+version: '3.8'
+services:
+  db:
+    container_name: db
+    image: postgres:alpine
+    ports:
+      - 8000:5432
+    volumes:
+      - D:\work\databases\birthday:/var/lib/postgresql/data
+    env_file:
+      - ./development.docker.env
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  server:
+    container_name: server
+    image: birthday-reminder-server
+    build:
+      context: ./
+      dockerfile: Dockerfile.development
+    ports:
+      - '8001:3000'
+    volumes:
+      - ./:/app
+    depends_on:
+      db:
+        condition: service_healthy
