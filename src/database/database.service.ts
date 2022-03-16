@@ -22,13 +22,13 @@ export class DatabaseService {
         password: config.password,
       });
     } catch (error) {
-      console.log(error);
+      throw error;
     }
   }
 
-  async query(queryString: string, params: string[] = []): Promise<any> {
+  async query(query: string, values: any[] = []): Promise<any[]> {
     try {
-      return (await this.pool.query(queryString, [...params])).rows;
+      return (await this.pool.query(query, values)).rows;
     } catch (error) {
       throw error;
     }
