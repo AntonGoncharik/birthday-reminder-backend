@@ -1,6 +1,14 @@
 node_modules
+npm-debug.log
 dist
 Dockerfile.development
+docker-compose.development.yml
 .git
 .gitignore
 .dockerignore
+.prettierrc
+.eslintrc.js
+LICENSE
+VERSION
+README.md
+Makefile

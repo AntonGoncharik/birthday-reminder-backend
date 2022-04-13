@@ -1,8 +1,10 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { GraphQLModule } from '@nestjs/graphql';
+import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 
-import { AppService } from './app.service';
 import { DatabaseModule } from '@database/database.module';
+import { UsersModule } from '@api/users/users.module';
 
 @Module({
   imports: [
@@ -17,7 +19,12 @@ import { DatabaseModule } from '@database/database.module';
       database: process.env.DB_NAME,
       password: process.env.DB_PASSWORD,
     }),
+    GraphQLModule.forRoot<ApolloDriverConfig>({
+      driver: ApolloDriver,
+      typePaths: ['./**/*.graphql'],
+      playground: process.env.NODE_ENV !== 'production',
+    }),
+    UsersModule,
   ],
-  providers: [AppService],
 })
 export class AppModule {}
