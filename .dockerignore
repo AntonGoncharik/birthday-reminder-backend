@@ -1,6 +1,7 @@
 node_modules
 npm-debug.log
 dist
+db
 Dockerfile.development
 docker-compose.development.yml
 .git

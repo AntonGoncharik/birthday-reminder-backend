@@ -19,8 +19,8 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "migrate:dev": "dotenv -e development.env db-migrate up",
-    "migrate:prod": "dotenv -e production.env db-migrate up",
+    "migrate:dev": "dotenv -e .development.env db-migrate up",
+    "migrate:prod": "dotenv -e .production.env db-migrate up",
     "start:dev:migrate": "yarn run migrate:dev && yarn run start:dev"
   },
   "dependencies": {
