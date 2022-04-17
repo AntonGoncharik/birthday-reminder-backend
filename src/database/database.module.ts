@@ -1,8 +1,8 @@
 import { Module, DynamicModule, Global } from '@nestjs/common';
 
 import { DatabaseService } from './database.service';
-import { DATABASE_CONFIG } from './constant';
-import { Database } from './interface';
+import { DATABASE_CONFIG } from './database.constant';
+import { Database } from './database.interface';
 
 @Global()
 @Module({})
