@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 
+import { PRODUCTION } from '@common/constants';
 import { DatabaseModule } from '@database/database.module';
 import { UsersModule } from '@api/users/users.module';
 
@@ -22,7 +23,7 @@ import { UsersModule } from '@api/users/users.module';
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       typePaths: ['./**/*.graphql'],
-      playground: process.env.NODE_ENV !== 'production',
+      playground: process.env.NODE_ENV !== PRODUCTION,
     }),
     UsersModule,
   ],

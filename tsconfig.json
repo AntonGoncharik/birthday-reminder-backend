@@ -20,8 +20,10 @@
     "noFallthroughCasesInSwitch": false,
     "strict": true,
     "paths": {
+      "@api/*": ["api/*"],
+      "@common/*": ["common/*"],
       "@database/*": ["database/*"],
-      "@api/*": ["api/*"]
+      "@mail/*": ["mail/*"]
     }
   }
 }
