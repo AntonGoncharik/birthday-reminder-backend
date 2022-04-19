@@ -1,18 +1,19 @@
 import { Resolver, Query } from '@nestjs/graphql';
 
 import { UsersService } from './users.service';
+import { DatabaseService } from '@database/database.service';
 
 @Resolver('Users')
 export class UsersResolver {
-  constructor(private usersService: UsersService) {}
+  constructor(
+    private usersService: UsersService,
+    private databaseService: DatabaseService,
+  ) {}
 
   @Query('users')
   async getUsers() {
-    return [
-      {
-        id: '1',
-        name: '1',
-      },
-    ];
+    const result = await this.databaseService.query('SELECT * FROM users');
+    console.log(result);
+    return result;
   }
 }

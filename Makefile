@@ -5,4 +5,4 @@ stop:
 	docker-compose -f docker-compose.development.yml down
 
 dev:
-	docker-compose -f docker-compose.development.yml up -d
+	docker-compose -f docker-compose.development.yml up
