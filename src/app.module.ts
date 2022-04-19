@@ -3,8 +3,9 @@ import { ConfigModule } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 
-import { PRODUCTION } from '@common/constants';
+import { PRODUCTION, API_URI } from '@common/constants';
 import { DatabaseModule } from '@database/database.module';
+import { AuthModule } from '@api/auth/auth.module';
 import { UsersModule } from '@api/users/users.module';
 
 @Module({
@@ -22,9 +23,11 @@ import { UsersModule } from '@api/users/users.module';
     }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
+      path: API_URI,
       typePaths: ['./**/*.graphql'],
       playground: process.env.NODE_ENV !== PRODUCTION,
     }),
+    AuthModule,
     UsersModule,
   ],
 })

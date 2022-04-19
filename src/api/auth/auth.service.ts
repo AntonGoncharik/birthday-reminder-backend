@@ -135,7 +135,7 @@ export class AuthService {
     try {
       const token = authorizationTokens.split(' ')[1];
       const refreshToken = authorizationTokens.split(' ')[2];
-
+      console.log(token);
       const result = await this.databaseService.query(
         `SELECT refresh_token, user_id
           FROM tokens
@@ -184,8 +184,8 @@ export class AuthService {
     }
   }
 
-  verify(token: string, options: { secret: string }) {
-    return this.jwtService.verify(token, options);
+  async verify(token: string, options: { secret: string }) {
+    return await this.jwtService.verifyAsync(token, options);
   }
 
   private generateTokens(userId: string, userDto: CreateUserDto) {
