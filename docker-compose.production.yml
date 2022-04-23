@@ -8,23 +8,36 @@ services:
     volumes:
       - /app/db:/var/lib/postgresql/data
     env_file:
-      - ./.development.env
+      - ./.production.env
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready -U postgres']
       interval: 5s
       timeout: 5s
       retries: 5
+  migration:
+    container_name: migration
+    image: birthday-reminder-server
+    build:
+      context: ./
+      dockerfile: Dockerfile.production
+    env_file:
+      - ./.production.env
+    command: sh -c "/app/node_modules/.bin/db-migrate up"
+    depends_on:
+      db:
+        condition: service_healthy
   server:
     container_name: server
     image: birthday-reminder-server
     build:
       context: ./
-      dockerfile: Dockerfile.development
+      dockerfile: Dockerfile.production
     ports:
       - '8001:3000'
-    volumes:
-      - ./:/app
-      - ./app/node_modules
+    env_file:
+      - ./.production.env
     depends_on:
       db:
         condition: service_healthy
+      migration:
+        condition: service_completed_successfully
