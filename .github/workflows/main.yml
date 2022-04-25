@@ -26,8 +26,8 @@ jobs:
       # - name: Build image
       #   run: docker-compose -f docker-compose.production.yml build
 
-      # - name: Show image
-      #   run: docker image ls
+      - name: Show image
+        run: docker image ls
 
       # - name: Push image to Docker Hub
       #   run:
