@@ -17,7 +17,7 @@ env:
   DB_PORT: ${{ secrets.DB_PORT }}
   NODE_ENV: ${{ secrets.NODE_ENV }}
   DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-  DOCKER_EMAIL: ${{ secrets.DOCKER_EMAIL }}
+  DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
 
 jobs:
   build:
@@ -29,7 +29,7 @@ jobs:
         run: docker-compose -f docker-compose.production.yml build
 
       - name: Login to Docker Hub
-        run: docker login --username=${{env.DOCKER_USERNAME}} --email=${{env.DOCKER_EMAIL}}
+        run: docker login -u=${{env.DOCKER_USERNAME}} -p=${{env.DOCKER_PASSWORD}}
 
       - name: Rename image
         run: docker tag birthday-reminder-server antgoncharik/birthday-reminder-server
