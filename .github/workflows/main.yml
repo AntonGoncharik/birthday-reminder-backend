@@ -32,7 +32,7 @@ jobs:
         run: docker tag birthday-reminder-server antgoncharik/birthday-reminder-server
 
       - name: Login to DockerHub
-        run: echo ${{ secrets.DOCKERHUB_TOKEN }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+        run: echo ${{ secrets.DOCKERHUB_TOKEN }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin hub.docker.com
 
       - name: Push image to Docker Hub
         run: docker push antgoncharik/birthday-reminder-server
