@@ -20,11 +20,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      # - name: Checkout master
       - uses: actions/checkout@v3
 
-      # - name: Build image
-      #   run: docker-compose -f docker-compose.production.yml build
+      - name: Build image
+        run: docker-compose -f docker-compose.production.yml build
 
       - name: Show image
         run: docker image ls
