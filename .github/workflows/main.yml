@@ -31,10 +31,8 @@ jobs:
       - name: Rename image
         run: docker tag birthday-reminder-server antgoncharik/birthday-reminder-server
 
-      - uses: docker/login-action@v1
-        with:
-          username: ${{ env.DOCKERHUB_USERNAME }}
-          password: ${{ env.DOCKERHUB_TOKEN }}
+      - name: Login to DockerHub
+        run: echo ${{ secrets.DOCKERHUB_TOKEN }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
 
       - name: Push image to Docker Hub
         run: docker push antgoncharik/birthday-reminder-server
