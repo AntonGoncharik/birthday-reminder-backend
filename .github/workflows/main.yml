@@ -1,4 +1,4 @@
-name: birthday-reminder-production
+name: production
 
 on:
   push:
@@ -15,6 +15,9 @@ env:
   DB_HOST: ${{ secrets.DB_HOST }}
   DB_NAME: ${{ secrets.DB_NAME }}
   DB_PORT: ${{ secrets.DB_PORT }}
+  NODE_ENV: ${{ secrets.NODE_ENV }}
+  DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+  DOCKER_EMAIL: ${{ secrets.DOCKER_EMAIL }}
 
 jobs:
   build:
@@ -25,11 +28,14 @@ jobs:
       - name: Build image
         run: docker-compose -f docker-compose.production.yml build
 
-      - name: Show image
-        run: docker image ls
+      - name: Login to Docker Hub
+        run: docker login --username=${{env.DOCKER_USERNAME}} --email=${{env.DOCKER_EMAIL}}
 
-      # - name: Push image to Docker Hub
-      #   run:
+      - name: Rename image
+        run: docker tag birthday-reminder-server antgoncharik/birthday-reminder-server
+
+      - name: Push image to Docker Hub
+        run: docker push antgoncharik/birthday-reminder-server
 
   # deploy:
   # runs-on: ubuntu-latest
