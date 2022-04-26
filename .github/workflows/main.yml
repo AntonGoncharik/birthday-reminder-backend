@@ -39,8 +39,8 @@ jobs:
 
       - uses: docker/login-action@v1
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          username: ${{ secrets.DB_DRIVER }}
+          password: ${{ secrets.DB_USER }}
           logout: true
 
       - name: Push image to Docker Hub
