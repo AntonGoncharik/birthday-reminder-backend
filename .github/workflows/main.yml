@@ -16,8 +16,6 @@ env:
   DB_NAME: ${{ secrets.DB_NAME }}
   DB_PORT: ${{ secrets.DB_PORT }}
   NODE_ENV: ${{ secrets.NODE_ENV }}
-  DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-  DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
 
 jobs:
   build:
@@ -39,8 +37,8 @@ jobs:
 
       - uses: docker/login-action@v1
         with:
-          username: ${{ secrets.DB_DRIVER }}
-          password: ${{ secrets.DB_USER }}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
           logout: true
 
       - name: Push image to Docker Hub
