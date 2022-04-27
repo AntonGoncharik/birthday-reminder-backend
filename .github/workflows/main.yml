@@ -46,9 +46,10 @@ jobs:
       - name: Configure SSH
         run: |
           mkdir -p ~/.ssh/
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          ${{ secrets.SSH_PRIVATE_KEY }} > ~/.ssh/id_rsa
+          ls -a
           ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}
-          ls
+          ls -a
 
       - name: Show
         run: ls
