@@ -48,7 +48,7 @@ jobs:
           mkdir -p ~/.ssh/
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           ls -a
-          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}
+          ssh -T ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}
           ls -a
 
       - name: Show
