@@ -47,10 +47,8 @@ jobs:
         run: |
           mkdir -p ~/.ssh/
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          ls -a
+          echo "${{ secrets.SSH_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
           ssh -T ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}
-          ls -a
 
       - name: Show
         run: ls
-# echo "${{ secrets.SSH_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
