@@ -61,6 +61,9 @@ jobs:
           ${{env.SSH}} echo 'export DB_PORT=${{secrets.DB_PORT}} >> .profile'
           ${{env.SSH}} echo 'export NODE_ENV=${{secrets.NODE_ENV}} >> .profile'
 
+      - name: Testing
+        run: echo $DB_USER
+
       - name: Stop containers
         run: ${{env.SSH}} docker-compose -f ${{env.WORKDIR}}/docker-compose.production.yml down
 
