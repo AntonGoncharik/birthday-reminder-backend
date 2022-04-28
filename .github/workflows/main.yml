@@ -27,11 +27,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Build image1
-        run: ls
-
       - name: Build image
-        run: docker build -t ${{secrets.DOCKERHUB_ACCOUNT}}/${{secrets.DOCKERHUB_IMAGE_NAME}} ~/Dockerfile.production
+        run: docker build -t ${{secrets.DOCKERHUB_ACCOUNT}}/${{secrets.DOCKERHUB_IMAGE_NAME}} -f Dockerfile.production .
 
       - name: Login to DockerHub
         run: echo ${{secrets.DOCKERHUB_TOKEN}} | docker login -u ${{secrets.DOCKERHUB_USERNAME}} --password-stdin
