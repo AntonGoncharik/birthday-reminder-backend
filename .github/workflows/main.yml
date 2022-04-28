@@ -54,6 +54,12 @@ jobs:
 
       - name: Step 1
         run: ssh -T ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} docker image ls
+
+      - name: Step 2
+        run: ssh -T ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} docker pull postgres:14.2-alpine
+
+      - name: Step 3
+        run: ssh -T ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} docker image ls
 # export DB_DRIVER=${{ secrets.DB_DRIVER }}
 # export DB_USER=${{ secrets.DB_USER }}
 # export DB_PASSWORD=${{ secrets.DB_PASSWORD }}
