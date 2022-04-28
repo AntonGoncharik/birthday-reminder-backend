@@ -18,31 +18,33 @@ env:
   NODE_ENV: ${{ secrets.NODE_ENV }}
 
 jobs:
-  # build:
-  #   runs-on: ubuntu-latest
-  #   environment: production
+  build:
+    runs-on: ubuntu-latest
+    environment: production
 
-  #   steps:
-  #     - uses: actions/checkout@v3
+    steps:
+      - uses: actions/checkout@v3
 
-  #     - name: Build image
-  #       run: docker-compose -f docker-compose.production.yml build
+      - name: Build image
+        run: docker-compose -f docker-compose.production.yml build
 
-  #     - name: Rename image
-  #       run: docker tag ${{ secrets.DOCKERHUB_IMAGE_NAME}} ${{ secrets.DOCKERHUB_ACCOUNT }}/${{ secrets.DOCKERHUB_IMAGE_NAME}}
+      - name: Rename image
+        run: docker tag ${{ secrets.DOCKERHUB_IMAGE_NAME}} ${{ secrets.DOCKERHUB_ACCOUNT }}/${{ secrets.DOCKERHUB_IMAGE_NAME}}
 
-  #     - name: Login to DockerHub
-  #       run: echo ${{ secrets.DOCKERHUB_TOKEN }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+      - name: Login to DockerHub
+        run: echo ${{ secrets.DOCKERHUB_TOKEN }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
 
-  #     - name: Push image to Docker Hub
-  #       run: docker push ${{ secrets.DOCKERHUB_ACCOUNT }}/${{ secrets.DOCKERHUB_IMAGE_NAME}}
+      - name: Push image to Docker Hub
+        run: docker push ${{ secrets.DOCKERHUB_ACCOUNT }}/${{ secrets.DOCKERHUB_IMAGE_NAME}}
 
   deploy:
     runs-on: ubuntu-latest
     environment: production
-    # needs: build
+    needs: build
 
     steps:
+      - uses: actions/checkout@v3
+
       - name: Configure SSH
         run: |
           mkdir -p ~/.ssh/
@@ -50,6 +52,14 @@ jobs:
           echo "${{ secrets.SSH_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
           chmod 600 ~/.ssh/id_rsa
           ssh -T ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}
-
-      - name: Show
-        run: ls
+          scp ./docker-compose.production.yml ${{ secrets.SSH_USER }}@{{ secrets.SSH_HOST }}:/home
+          export DB_DRIVER=${{ secrets.DB_DRIVER }}
+          export DB_USER=${{ secrets.DB_USER }}
+          export DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+          export DB_HOST=${{ secrets.DB_HOST }}
+          export DB_NAME=${{ secrets.DB_NAME }}
+          export DB_PORT=${{ secrets.DB_PORT }}
+          export NODE_ENV=${{ secrets.NODE_ENV }}
+          docker-compose -f docker-compose.production.yml down
+          docker-compose -f docker-compose.production.yml up -d
+          ls
