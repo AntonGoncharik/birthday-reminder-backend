@@ -54,7 +54,7 @@ jobs:
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           echo "${{ secrets.SSH_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
           chmod 600 ~/.ssh/id_rsa
-          ssh -T ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}
+          ssh -T ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} &&
           docker image ls
 
 # export DB_DRIVER=${{ secrets.DB_DRIVER }}
