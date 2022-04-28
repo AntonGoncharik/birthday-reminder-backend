@@ -54,8 +54,7 @@ jobs:
 
       - name: ENV setting
         run: |
-          ssh -T ${{secrets.SSH_USER}}@${{secrets.SSH_HOST}} rm -f ~/.profile
-          ssh -T ${{secrets.SSH_USER}}@${{secrets.SSH_HOST}} touch ~/.profile
+          ssh -T ${{secrets.SSH_USER}}@${{secrets.SSH_HOST}} rm -f ~/.profile && touch ~/.profile
           ssh -T ${{secrets.SSH_USER}}@${{secrets.SSH_HOST}} echo 'export DB_DRIVER=${{secrets.DB_DRIVER}}' >> ~/.profile 
           ssh -T ${{secrets.SSH_USER}}@${{secrets.SSH_HOST}} echo 'export DB_USER=${{secrets.DB_USER}}' >> ~/.profile
           ssh -T ${{secrets.SSH_USER}}@${{secrets.SSH_HOST}} echo 'export DB_PASSWORD=${{secrets.DB_PASSWORD}}' >> ~/.profile
