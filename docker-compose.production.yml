@@ -19,10 +19,7 @@ services:
       retries: 5
   migration:
     container_name: migration
-    image: birthday-reminder-server
-    build:
-      context: ./
-      dockerfile: Dockerfile.production
+    image: antgoncharik/birthday-reminder-server
     environment:
       - DB_DRIVER=${DB_DRIVER}
       - DB_USER=${DB_USER}
@@ -36,10 +33,7 @@ services:
         condition: service_healthy
   server:
     container_name: server
-    image: birthday-reminder-server
-    build:
-      context: ./
-      dockerfile: Dockerfile.production
+    image: antgoncharik/birthday-reminder-server
     ports:
       - '8001:3000'
     environment:
