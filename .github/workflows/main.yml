@@ -45,6 +45,9 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Configure 1
+        run: docker image ls
+
       - name: Configure SSH
         run: |
           mkdir -p ~/.ssh/
