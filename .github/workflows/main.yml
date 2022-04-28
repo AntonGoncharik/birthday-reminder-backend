@@ -17,7 +17,7 @@ env:
   DB_PORT: ${{secrets.DB_PORT}}
   NODE_ENV: ${{secrets.NODE_ENV}}
   SSH: ssh -T ${{secrets.SSH_USER}}@${{secrets.SSH_HOST}}
-  WORKDIR: birtday-reminder-backend
+  WORKDIR: birthday-reminder-backend
 
 jobs:
   build:
