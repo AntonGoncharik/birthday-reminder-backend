@@ -69,7 +69,7 @@ jobs:
         run: ls
 
       - name: Copy docker-compose file
-        run: scp docker-compose.production.yml ssh ${{secrets.SSH_USER}}@${{secrets.SSH_HOST}}:./
+        run: scp docker-compose.production.yml ssh ${{secrets.SSH_USER}}@${{secrets.SSH_HOST}}:./docker-compose.production.yml
 
       - name: Stop containers
         run: ${{env.SSH}} docker-compose -f docker-compose.production.yml down
