@@ -55,7 +55,8 @@ jobs:
 
       - name: ENV setting
         run: |
-          ${{env.SSH}} rm -f ~/.profile && touch ~/.profile
+          ${{env.SSH}} touch ~/.profile
+          ${{env.SSH}} touch ~/.TEST
           ${{env.SSH}} echo 'export DB_DRIVER=${{secrets.DB_DRIVER}}' >> ~/.profile 
           ${{env.SSH}} echo 'export DB_USER=${{secrets.DB_USER}}' >> ~/.profile
           ${{env.SSH}} echo 'export DB_PASSWORD=${{secrets.DB_PASSWORD}}' >> ~/.profile
