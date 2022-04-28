@@ -52,7 +52,7 @@ jobs:
           echo "${{ secrets.SSH_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
           chmod 600 ~/.ssh/id_rsa
           ssh -T ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}
-          scp ./docker-compose.production.yml ${{ secrets.SSH_USER }}@{{ secrets.SSH_HOST }}:/home
+          echo "${{ secrets.NODE_ENV }}"
           export DB_DRIVER=${{ secrets.DB_DRIVER }}
           export DB_USER=${{ secrets.DB_USER }}
           export DB_PASSWORD=${{ secrets.DB_PASSWORD }}
