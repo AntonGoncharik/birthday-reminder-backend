@@ -52,14 +52,15 @@ jobs:
           echo "${{ secrets.SSH_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
           chmod 600 ~/.ssh/id_rsa
           ssh -T ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}
-          echo "${{ secrets.NODE_ENV }}"
-          export DB_DRIVER=${{ secrets.DB_DRIVER }}
-          export DB_USER=${{ secrets.DB_USER }}
-          export DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-          export DB_HOST=${{ secrets.DB_HOST }}
-          export DB_NAME=${{ secrets.DB_NAME }}
-          export DB_PORT=${{ secrets.DB_PORT }}
-          export NODE_ENV=${{ secrets.NODE_ENV }}
-          docker-compose -f docker-compose.production.yml down
-          docker-compose -f docker-compose.production.yml up -d
-          ls
+          docker pull postgres:14.2-alpine
+
+# export DB_DRIVER=${{ secrets.DB_DRIVER }}
+# export DB_USER=${{ secrets.DB_USER }}
+# export DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+# export DB_HOST=${{ secrets.DB_HOST }}
+# export DB_NAME=${{ secrets.DB_NAME }}
+# export DB_PORT=${{ secrets.DB_PORT }}
+# export NODE_ENV=${{ secrets.NODE_ENV }}
+# docker-compose -f docker-compose.production.yml down
+# docker-compose -f docker-compose.production.yml up -d
+# ls
