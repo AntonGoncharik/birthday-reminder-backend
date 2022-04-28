@@ -19,24 +19,24 @@ env:
   SSH: ssh -T ${{secrets.SSH_USER}}@${{secrets.SSH_HOST}}
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    environment: production
+  # build:
+  #   runs-on: ubuntu-latest
+  #   environment: production
 
-    steps:
-      - uses: actions/checkout@v3
+  #   steps:
+  #     - uses: actions/checkout@v3
 
-      - name: Build image
-        run: docker-compose -f docker-compose.production.yml build
+  #     - name: Build image
+  #       run: docker-compose -f docker-compose.production.yml build
 
-      - name: Rename image
-        run: docker tag ${{secrets.DOCKERHUB_IMAGE_NAME}} ${{secrets.DOCKERHUB_ACCOUNT}}/${{secrets.DOCKERHUB_IMAGE_NAME}}
+  #     - name: Rename image
+  #       run: docker tag ${{secrets.DOCKERHUB_IMAGE_NAME}} ${{secrets.DOCKERHUB_ACCOUNT}}/${{secrets.DOCKERHUB_IMAGE_NAME}}
 
-      - name: Login to DockerHub
-        run: echo ${{secrets.DOCKERHUB_TOKEN}} | docker login -u ${{secrets.DOCKERHUB_USERNAME}} --password-stdin
+  #     - name: Login to DockerHub
+  #       run: echo ${{secrets.DOCKERHUB_TOKEN}} | docker login -u ${{secrets.DOCKERHUB_USERNAME}} --password-stdin
 
-      - name: Push image to Docker Hub
-        run: docker push ${{secrets.DOCKERHUB_ACCOUNT}}/${{secrets.DOCKERHUB_IMAGE_NAME}}
+  #     - name: Push image to Docker Hub
+  #       run: docker push ${{secrets.DOCKERHUB_ACCOUNT}}/${{secrets.DOCKERHUB_IMAGE_NAME}}
 
   deploy:
     runs-on: ubuntu-latest
@@ -64,6 +64,9 @@ jobs:
           ${{env.SSH}} echo 'export DB_NAME=${{secrets.DB_NAME}} >> .profile'
           ${{env.SSH}} echo 'export DB_PORT=${{secrets.DB_PORT}} >> .profile'
           ${{env.SSH}} echo 'export NODE_ENV=${{secrets.NODE_ENV}} >> .profile'
+
+      - name: Copy docker-compose file1
+        run: ls
 
       - name: Copy docker-compose file
         run: scp ./docker-compose.production.yml ${{env.SSH}}:./
