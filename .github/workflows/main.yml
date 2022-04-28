@@ -65,6 +65,9 @@ jobs:
           ${{env.SSH}} echo 'export DB_PORT=${{secrets.DB_PORT}} >> .profile'
           ${{env.SSH}} echo 'export NODE_ENV=${{secrets.NODE_ENV}} >> .profile'
 
+      - name: Copy docker-compose file
+        run: scp ./docker-compose.production.yml ${{env.SSH}}:./
+
       - name: Stop containers
         run: ${{env.SSH}} docker-compose -f docker-compose.production.yml down
 
