@@ -45,34 +45,28 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Configure SSH
+      - name: SSH setting
         run: |
           mkdir -p ~/.ssh/
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           echo "${{ secrets.SSH_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
           chmod 600 ~/.ssh/id_rsa
 
-      # - name: Step 1
-      #   run: ssh -T ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} docker image ls
+      - name: ENV setting
+        run: |
+          ssh -T ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} export DB_DRIVER=${{ secrets.DB_DRIVER }} && export DB_USER=${{ secrets.DB_USER }} && export DB_PASSWORD=${{ secrets.DB_PASSWORD }} && export DB_HOST=${{ secrets.DB_HOST }} && xport DB_NAME=${{ secrets.DB_NAME }} && export DB_PORT=${{ secrets.DB_PORT }} && export NODE_ENV=${{ secrets.NODE_ENV }} && env
 
-      # - name: Step 2
-      #   run: ssh -T ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} docker pull postgres:14.2-alpine
+        # run: |
+        #   ssh -T ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} export DB_DRIVER=${{ secrets.DB_DRIVER }}
+        #   ssh -T ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} export DB_USER=${{ secrets.DB_USER }}
+        #   ssh -T ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} export DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+        #   ssh -T ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} export DB_HOST=${{ secrets.DB_HOST }}
+        #   ssh -T ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} export DB_NAME=${{ secrets.DB_NAME }}
+        #   ssh -T ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} export DB_PORT=${{ secrets.DB_PORT }}
+        #   ssh -T ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} export NODE_ENV=${{ secrets.NODE_ENV }}
 
-      - name: Step 3
-        run: ssh -T ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} docker image ls
+      # - name: Stop containers
+      #   run: ssh -T ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} docker-compose -f docker-compose.production.yml down
 
-      - name: Step 4
-        run: ssh -T ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} export DB_DRIVER=${{ secrets.DB_DRIVER }}
-
-      - name: Step 5
-        run: ssh -T ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} echo $DB_DRIVER
-# export DB_DRIVER=${{ secrets.DB_DRIVER }}
-# export DB_USER=${{ secrets.DB_USER }}
-# export DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-# export DB_HOST=${{ secrets.DB_HOST }}
-# export DB_NAME=${{ secrets.DB_NAME }}
-# export DB_PORT=${{ secrets.DB_PORT }}
-# export NODE_ENV=${{ secrets.NODE_ENV }}
-# docker-compose -f docker-compose.production.yml down
-# docker-compose -f docker-compose.production.yml up -d
-# ls
+      # - name: Run containers
+      #   run: ssh -T ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} docker-compose -f docker-compose.production.yml up -d
