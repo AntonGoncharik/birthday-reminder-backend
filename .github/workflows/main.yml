@@ -57,7 +57,7 @@ jobs:
         run: |
           ${{env.SSH}} rm -rf ${{env.WORKDIR}}
           ${{env.SSH}} mkdir -p ${{env.WORKDIR}}
-          echo ${{DOCKER_COMPOSE_FILE}} | ${{env.SSH}} "cat > ${{env.WORKDIR}}/${{DOCKER_COMPOSE_FILE}}"
+          echo ${{env.DOCKER_COMPOSE_FILE}} | ${{env.SSH}} "cat > ${{env.WORKDIR}}/${{env.DOCKER_COMPOSE_FILE}}"
 
       - name: ENV file
         run: |
