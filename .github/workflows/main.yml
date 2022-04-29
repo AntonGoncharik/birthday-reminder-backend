@@ -55,7 +55,7 @@ jobs:
         run: |
           ${{env.SSH}} rm -rf birthday-reminder-backend
           ${{env.SSH}} mkdir -p birthday-reminder-backend
-          ${{env.SSH}} cat docker-compose.production.yml > birthday-reminder-backend/docker-compose.production.yml
+          cat docker-compose.production.yml | ${{env.SSH}} "cat > birthday-reminder-backend/docker-compose.production.yml"
 
       - name: ENV setting
         run: |
