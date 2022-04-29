@@ -55,23 +55,23 @@ jobs:
 
       - name: Docker-compose file
         run: |
-          ${{env.SSH}} rm -rf ${{WORKDIR}}
-          ${{env.SSH}} mkdir -p ${{WORKDIR}}
-          echo ${{DOCKER_COMPOSE_FILE}} | ${{env.SSH}} "cat > ${{WORKDIR}}/${{DOCKER_COMPOSE_FILE}}"
+          ${{env.SSH}} rm -rf ${{env.WORKDIR}}
+          ${{env.SSH}} mkdir -p ${{env.WORKDIR}}
+          echo ${{DOCKER_COMPOSE_FILE}} | ${{env.SSH}} "cat > ${{env.WORKDIR}}/${{DOCKER_COMPOSE_FILE}}"
 
       - name: ENV file
         run: |
-          ${{env.SSH}} echo 'DB_DRIVER=${{secrets.DB_DRIVER}} >> ${{WORKDIR}}/${{env.ENV_FILE}}'
-          ${{env.SSH}} echo 'DB_USER=${{secrets.DB_USER}} >> ${{WORKDIR}}/${{env.ENV_FILE}}'
-          ${{env.SSH}} echo 'DB_PASSWORD=${{secrets.DB_PASSWORD}} >> ${{WORKDIR}}/${{env.ENV_FILE}}'
-          ${{env.SSH}} echo 'DB_HOST=${{secrets.DB_HOST}} >> ${{WORKDIR}}/${{env.ENV_FILE}}'
-          ${{env.SSH}} echo 'DB_NAME=${{secrets.DB_NAME}} >> ${{WORKDIR}}/${{env.ENV_FILE}}'
-          ${{env.SSH}} echo 'DB_PORT=${{secrets.DB_PORT}} >> ${{WORKDIR}}/${{env.ENV_FILE}}'
-          ${{env.SSH}} echo 'POSTGRES_USER=${{secrets.DB_USER}} >> ${{WORKDIR}}/${{env.ENV_FILE}}'
-          ${{env.SSH}} echo 'POSTGRES_PASSWORD=${{secrets.DB_PASSWORD}} >> ${{WORKDIR}}/${{env.ENV_FILE}}'
-          ${{env.SSH}} echo 'POSTGRES_DB=${{secrets.DB_NAME}} >> ${{WORKDIR}}/${{env.ENV_FILE}}'
-          ${{env.SSH}} echo 'PGPORT=${{secrets.DB_PORT}} >> ${{WORKDIR}}/${{env.ENV_FILE}}'
-          ${{env.SSH}} echo 'NODE_ENV=${{secrets.NODE_ENV}} >> ${{WORKDIR}}/${{env.ENV_FILE}}'
+          ${{env.SSH}} echo 'DB_DRIVER=${{secrets.DB_DRIVER}} >> ${{env.WORKDIR}}/${{env.ENV_FILE}}'
+          ${{env.SSH}} echo 'DB_USER=${{secrets.DB_USER}} >> ${{env.WORKDIR}}/${{env.ENV_FILE}}'
+          ${{env.SSH}} echo 'DB_PASSWORD=${{secrets.DB_PASSWORD}} >> ${{env.WORKDIR}}/${{env.ENV_FILE}}'
+          ${{env.SSH}} echo 'DB_HOST=${{secrets.DB_HOST}} >> ${{env.WORKDIR}}/${{env.ENV_FILE}}'
+          ${{env.SSH}} echo 'DB_NAME=${{secrets.DB_NAME}} >> ${{env.WORKDIR}}/${{env.ENV_FILE}}'
+          ${{env.SSH}} echo 'DB_PORT=${{secrets.DB_PORT}} >> ${{env.WORKDIR}}/${{env.ENV_FILE}}'
+          ${{env.SSH}} echo 'POSTGRES_USER=${{secrets.DB_USER}} >> ${{env.WORKDIR}}/${{env.ENV_FILE}}'
+          ${{env.SSH}} echo 'POSTGRES_PASSWORD=${{secrets.DB_PASSWORD}} >> ${{env.WORKDIR}}/${{env.ENV_FILE}}'
+          ${{env.SSH}} echo 'POSTGRES_DB=${{secrets.DB_NAME}} >> ${{env.WORKDIR}}/${{env.ENV_FILE}}'
+          ${{env.SSH}} echo 'PGPORT=${{secrets.DB_PORT}} >> ${{env.WORKDIR}}/${{env.ENV_FILE}}'
+          ${{env.SSH}} echo 'NODE_ENV=${{secrets.NODE_ENV}} >> ${{env.WORKDIR}}/${{env.ENV_FILE}}'
 
       # - name: Stop containers
       #   run: ${{env.SSH}} docker-compose -f ${{env.WORKDIR}}/${{env.DOCKER_COMPOSE_FILE}} down
