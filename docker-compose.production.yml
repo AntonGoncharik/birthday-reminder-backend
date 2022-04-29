@@ -7,11 +7,8 @@ services:
       - 8000:5432
     volumes:
       - /app/db:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_USER=${DB_USER}
-      - POSTGRES_PASSWORD=${DB_PASSWORD}
-      - POSTGRES_DB=${DB_NAME}
-      - PGPORT=${DB_PORT}
+    env_file:
+      - .production.env
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready -U postgres']
       interval: 5s
@@ -20,13 +17,8 @@ services:
   migration:
     container_name: migration
     image: antgoncharik/birthday-reminder-server
-    environment:
-      - DB_DRIVER=${DB_DRIVER}
-      - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - DB_HOST=${DB_HOST}
-      - DB_NAME=${DB_NAME}
-      - DB_PORT=${DB_PORT}
+    env_file:
+      - .production.env
     command: sh -c "/app/node_modules/.bin/db-migrate up"
     depends_on:
       db:
@@ -36,13 +28,8 @@ services:
     image: antgoncharik/birthday-reminder-server
     ports:
       - '8001:3000'
-    environment:
-      - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - DB_HOST=${DB_HOST}
-      - DB_NAME=${DB_NAME}
-      - DB_PORT=${DB_PORT}
-      - NODE_ENV=${NODE_ENV}
+    env_file:
+      - .production.env
     depends_on:
       db:
         condition: service_healthy

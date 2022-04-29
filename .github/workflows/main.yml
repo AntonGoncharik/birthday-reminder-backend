@@ -17,29 +17,29 @@ env:
   DB_PORT: ${{secrets.DB_PORT}}
   NODE_ENV: ${{secrets.NODE_ENV}}
   SSH: ssh -T ${{secrets.SSH_USER}}@${{secrets.SSH_HOST}}
-  WORKDIR: birthday-reminder-backend
+  ENV_FILE: birthday-reminder-backend/.production.env
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    environment: production
+  # build:
+  #   runs-on: ubuntu-latest
+  #   environment: production
 
-    steps:
-      - uses: actions/checkout@v3
+  #   steps:
+  #     - uses: actions/checkout@v3
 
-      - name: Build image
-        run: docker build -t ${{secrets.DOCKERHUB_ACCOUNT}}/${{secrets.DOCKERHUB_IMAGE_NAME}} -f Dockerfile.production .
+  #     - name: Build image
+  #       run: docker build -t ${{secrets.DOCKERHUB_ACCOUNT}}/${{secrets.DOCKERHUB_IMAGE_NAME}} -f Dockerfile.production .
 
-      - name: Login to DockerHub
-        run: echo ${{secrets.DOCKERHUB_TOKEN}} | docker login -u ${{secrets.DOCKERHUB_USERNAME}} --password-stdin
+  #     - name: Login to DockerHub
+  #       run: echo ${{secrets.DOCKERHUB_TOKEN}} | docker login -u ${{secrets.DOCKERHUB_USERNAME}} --password-stdin
 
-      - name: Push image to Docker Hub
-        run: docker push ${{secrets.DOCKERHUB_ACCOUNT}}/${{secrets.DOCKERHUB_IMAGE_NAME}}
+  #     - name: Push image to Docker Hub
+  #       run: docker push ${{secrets.DOCKERHUB_ACCOUNT}}/${{secrets.DOCKERHUB_IMAGE_NAME}}
 
   deploy:
     runs-on: ubuntu-latest
     environment: production
-    needs: build
+    # needs: build
 
     steps:
       - name: SSH setting
@@ -51,21 +51,22 @@ jobs:
 
       - name: ENV setting
         run: |
-          ${{env.SSH}} rm -f .profile
-          ${{env.SSH}} touch .profile
-          ${{env.SSH}} echo 'export DB_DRIVER=${{secrets.DB_DRIVER}} >> .profile'
-          ${{env.SSH}} echo 'export DB_USER=${{secrets.DB_USER}} >> .profile'
-          ${{env.SSH}} echo 'export DB_PASSWORD=${{secrets.DB_PASSWORD}} >> .profile'
-          ${{env.SSH}} echo 'export DB_HOST=${{secrets.DB_HOST}} >> .profile'
-          ${{env.SSH}} echo 'export DB_NAME=${{secrets.DB_NAME}} >> .profile'
-          ${{env.SSH}} echo 'export DB_PORT=${{secrets.DB_PORT}} >> .profile'
-          ${{env.SSH}} echo 'export NODE_ENV=${{secrets.NODE_ENV}} >> .profile'
+          ${{env.SSH}} rm -f ${{ENV_FILE}}
+          ${{env.SSH}} touch ${{ENV_FILE}}
+          ${{env.SSH}} echo 'DB_DRIVER=${{secrets.DB_DRIVER}} >> ${{ENV_FILE}}'
+          ${{env.SSH}} echo 'DB_USER=${{secrets.DB_USER}} >> ${{ENV_FILE}}'
+          ${{env.SSH}} echo 'DB_PASSWORD=${{secrets.DB_PASSWORD}} >> ${{ENV_FILE}}'
+          ${{env.SSH}} echo 'DB_HOST=${{secrets.DB_HOST}} >> ${{ENV_FILE}}'
+          ${{env.SSH}} echo 'DB_NAME=${{secrets.DB_NAME}} >> ${{ENV_FILE}}'
+          ${{env.SSH}} echo 'DB_PORT=${{secrets.DB_PORT}} >> ${{ENV_FILE}}'
+          ${{env.SSH}} echo 'POSTGRES_USER=${{secrets.DB_USER}} >> ${{ENV_FILE}}'
+          ${{env.SSH}} echo 'POSTGRES_PASSWORD=${{secrets.DB_PASSWORD}} >> ${{ENV_FILE}}'
+          ${{env.SSH}} echo 'POSTGRES_DB=${{secrets.DB_NAME}} >> ${{ENV_FILE}}'
+          ${{env.SSH}} echo 'PGPORT=${{secrets.DB_PORT}} >> ${{ENV_FILE}}'
+          ${{env.SSH}} echo 'NODE_ENV=${{secrets.NODE_ENV}} >> ${{ENV_FILE}}'
 
-      - name: Testing
-        run: echo $DB_USER
+      # - name: Stop containers
+      #   run: ${{env.SSH}} docker-compose -f ${{env.WORKDIR}}/docker-compose.production.yml down
 
-      - name: Stop containers
-        run: ${{env.SSH}} docker-compose -f ${{env.WORKDIR}}/docker-compose.production.yml down
-
-      - name: Run containers
-        run: ${{env.SSH}} docker-compose -f ${{env.WORKDIR}}/docker-compose.production.yml up -d
+      # - name: Run containers
+      #   run: ${{env.SSH}} docker-compose -f ${{env.WORKDIR}}/docker-compose.production.yml up -d --build
