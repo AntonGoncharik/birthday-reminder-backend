@@ -17,7 +17,9 @@ env:
   DB_PORT: ${{secrets.DB_PORT}}
   NODE_ENV: ${{secrets.NODE_ENV}}
   SSH: ssh -T ${{secrets.SSH_USER}}@${{secrets.SSH_HOST}}
-  ENV_FILE: birthday-reminder-backend/.production.env
+  WORKDIR: birthday-reminder-backend
+  ENV_FILE: .production.env
+  DOCKER_COMPOSE_FILE: docker-compose.production.yml
 
 jobs:
   # build:
@@ -51,30 +53,28 @@ jobs:
           echo "${{secrets.SSH_KNOWN_HOSTS}}" > ~/.ssh/known_hosts
           chmod 600 ~/.ssh/id_rsa
 
-      - name: Copy docker-compose file
+      - name: Docker-compose file
         run: |
-          ${{env.SSH}} rm -rf birthday-reminder-backend
-          ${{env.SSH}} mkdir -p birthday-reminder-backend
-          cat docker-compose.production.yml | ${{env.SSH}} "cat > birthday-reminder-backend/docker-compose.production.yml"
+          ${{env.SSH}} rm -rf ${{WORKDIR}}
+          ${{env.SSH}} mkdir -p ${{WORKDIR}}
+          echo ${{DOCKER_COMPOSE_FILE}} | ${{env.SSH}} "cat > ${{WORKDIR}}/${{DOCKER_COMPOSE_FILE}}"
 
-      - name: ENV setting
+      - name: ENV file
         run: |
-          ${{env.SSH}} rm -f ${{env.ENV_FILE}}
-          ${{env.SSH}} touch ${{env.ENV_FILE}}
-          ${{env.SSH}} echo 'DB_DRIVER=${{secrets.DB_DRIVER}} >> ${{env.ENV_FILE}}'
-          ${{env.SSH}} echo 'DB_USER=${{secrets.DB_USER}} >> ${{env.ENV_FILE}}'
-          ${{env.SSH}} echo 'DB_PASSWORD=${{secrets.DB_PASSWORD}} >> ${{env.ENV_FILE}}'
-          ${{env.SSH}} echo 'DB_HOST=${{secrets.DB_HOST}} >> ${{env.ENV_FILE}}'
-          ${{env.SSH}} echo 'DB_NAME=${{secrets.DB_NAME}} >> ${{env.ENV_FILE}}'
-          ${{env.SSH}} echo 'DB_PORT=${{secrets.DB_PORT}} >> ${{env.ENV_FILE}}'
-          ${{env.SSH}} echo 'POSTGRES_USER=${{secrets.DB_USER}} >> ${{env.ENV_FILE}}'
-          ${{env.SSH}} echo 'POSTGRES_PASSWORD=${{secrets.DB_PASSWORD}} >> ${{env.ENV_FILE}}'
-          ${{env.SSH}} echo 'POSTGRES_DB=${{secrets.DB_NAME}} >> ${{env.ENV_FILE}}'
-          ${{env.SSH}} echo 'PGPORT=${{secrets.DB_PORT}} >> ${{env.ENV_FILE}}'
-          ${{env.SSH}} echo 'NODE_ENV=${{secrets.NODE_ENV}} >> ${{env.ENV_FILE}}'
+          ${{env.SSH}} echo 'DB_DRIVER=${{secrets.DB_DRIVER}} >> ${{WORKDIR}}/${{env.ENV_FILE}}'
+          ${{env.SSH}} echo 'DB_USER=${{secrets.DB_USER}} >> ${{WORKDIR}}/${{env.ENV_FILE}}'
+          ${{env.SSH}} echo 'DB_PASSWORD=${{secrets.DB_PASSWORD}} >> ${{WORKDIR}}/${{env.ENV_FILE}}'
+          ${{env.SSH}} echo 'DB_HOST=${{secrets.DB_HOST}} >> ${{WORKDIR}}/${{env.ENV_FILE}}'
+          ${{env.SSH}} echo 'DB_NAME=${{secrets.DB_NAME}} >> ${{WORKDIR}}/${{env.ENV_FILE}}'
+          ${{env.SSH}} echo 'DB_PORT=${{secrets.DB_PORT}} >> ${{WORKDIR}}/${{env.ENV_FILE}}'
+          ${{env.SSH}} echo 'POSTGRES_USER=${{secrets.DB_USER}} >> ${{WORKDIR}}/${{env.ENV_FILE}}'
+          ${{env.SSH}} echo 'POSTGRES_PASSWORD=${{secrets.DB_PASSWORD}} >> ${{WORKDIR}}/${{env.ENV_FILE}}'
+          ${{env.SSH}} echo 'POSTGRES_DB=${{secrets.DB_NAME}} >> ${{WORKDIR}}/${{env.ENV_FILE}}'
+          ${{env.SSH}} echo 'PGPORT=${{secrets.DB_PORT}} >> ${{WORKDIR}}/${{env.ENV_FILE}}'
+          ${{env.SSH}} echo 'NODE_ENV=${{secrets.NODE_ENV}} >> ${{WORKDIR}}/${{env.ENV_FILE}}'
 
       # - name: Stop containers
-      #   run: ${{env.SSH}} docker-compose -f ${{env.WORKDIR}}/docker-compose.production.yml down
+      #   run: ${{env.SSH}} docker-compose -f ${{env.WORKDIR}}/${{env.DOCKER_COMPOSE_FILE}} down
 
       # - name: Run containers
-      #   run: ${{env.SSH}} docker-compose -f ${{env.WORKDIR}}/docker-compose.production.yml up -d --build
+      #   run: ${{env.SSH}} docker-compose -f ${{env.WORKDIR}}/${{env.DOCKER_COMPOSE_FILE}} up -d --build
