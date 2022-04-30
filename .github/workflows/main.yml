@@ -50,7 +50,7 @@ jobs:
         run: |
           ${{ env.SSH }} rm -rf ${{ env.WORKDIR }}
           ${{ env.SSH }} mkdir -p ${{ env.WORKDIR }}
-          cat ${{ env.DOCKER_COMPOSE_FILE }} | ${{ env.SSH }} cat > ${{ env.WORKDIR }}/${{ env.DOCKER_COMPOSE_FILE }}
+          cat ${{ env.DOCKER_COMPOSE_FILE }} | ${{ env.SSH }} 'cat > ${{ env.WORKDIR }}/${{ env.DOCKER_COMPOSE_FILE }}'
 
       - name: Create env file
         run: |
