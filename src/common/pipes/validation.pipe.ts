@@ -1,17 +1,12 @@
-import {
-  ArgumentMetadata,
-  Injectable,
-  PipeTransform,
-  BadRequestException,
-} from '@nestjs/common';
+import { ArgumentMetadata, Injectable, PipeTransform } from '@nestjs/common';
 import { plainToClass } from 'class-transformer';
 import { validate } from 'class-validator';
 
 @Injectable()
-export class ValidationPipe implements PipeTransform<any> {
+export class ValidationPipe implements PipeTransform {
   async transform(value: any, metadata: ArgumentMetadata): Promise<any> {
     try {
-      const obj = plainToClass(metadata.metatype, value);
+      const obj = plainToClass(metadata.metatype, value.payload);
       const errors = await validate(obj);
 
       if (errors.length) {
@@ -20,12 +15,13 @@ export class ValidationPipe implements PipeTransform<any> {
             ', ',
           )}`;
         });
-        throw new BadRequestException({
-          message: messages,
-        });
+
+        throw new Error(messages.join('; '));
       }
 
       return value;
-    } catch (error) {}
+    } catch (error) {
+      throw new Error((error as { message: string }).message);
+    }
   }
 }

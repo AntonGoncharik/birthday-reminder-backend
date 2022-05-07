@@ -1,0 +1,17 @@
+type Auth {
+  userId: String!
+  token: String!
+  refreshToken: String!
+}
+
+input Login {
+  email: String!
+  password: String!
+}
+
+type Mutation {
+  signup(payload: Login): Auth
+  signin(payload: Login): Auth
+  # active(email: String!, password: String!): Auth
+  # refresh(email: String!, password: String!): Auth
+}

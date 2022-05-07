@@ -2,11 +2,14 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { APP_GUARD } from '@nestjs/core';
+import { GraphQLError, GraphQLFormattedError } from 'graphql';
 
 import { PRODUCTION, API_URI } from '@common/constants';
 import { DatabaseModule } from '@database/database.module';
 import { AuthModule } from '@api/auth/auth.module';
 import { UsersModule } from '@api/users/users.module';
+import { JwtAuthGuard } from '@api/auth/guards';
 
 @Module({
   imports: [
@@ -26,9 +29,21 @@ import { UsersModule } from '@api/users/users.module';
       path: API_URI,
       typePaths: ['./**/*.graphql'],
       playground: process.env.NODE_ENV !== PRODUCTION,
+      formatError: (error: GraphQLError) => {
+        const graphQLFormattedError: GraphQLFormattedError = {
+          message: error.message,
+        };
+        return graphQLFormattedError;
+      },
     }),
     AuthModule,
     UsersModule,
+  ],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    },
   ],
 })
 export class AppModule {}

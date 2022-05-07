@@ -11,6 +11,7 @@ import { DatabaseService } from '@database/database.service';
 import { MailService } from '@mail/mail.service';
 import { UsersService } from '@api/users/users.service';
 import { CreateUserDto } from '@api/users/dto';
+import { LoginDto } from './dto';
 import { getTemplateRegistartionEmail } from './templates';
 import { BIRTHDAY_REMINDER_REGISTRATION } from './constants';
 
@@ -51,50 +52,48 @@ export class AuthService {
     }
   }
 
-  async signup(userDto: CreateUserDto) {
+  async signup(signupDto: LoginDto) {
     try {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
+      console.log(signupDto);
+      const users = await this.userService.getByEmail(signupDto.email);
 
-      const users = await this.userService.getUserByEmail(userDto.email);
+      // if (users[0]) {
+      //   throw new BadRequestException({
+      //     message: 'User with this email exists',
+      //   });
+      // }
 
-      if (users[0]) {
-        throw new BadRequestException({
-          message: 'User with this email exists',
-        });
-      }
+      // const activationLink = uniqid();
+      // // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // // @ts-ignore
 
-      const activationLink = uniqid();
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
+      // const hashPassword = await bcrypt.hash(userDto.password, 5);
+      // // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // // @ts-ignore
 
-      const hashPassword = await bcrypt.hash(userDto.password, 5);
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
+      // const userId = await this.userService.createUser({
+      //   ...userDto,
+      //   password: hashPassword,
+      //   activationLink,
+      // });
+      // const tokens = this.generateTokens(`${userId}`, userDto);
 
-      const userId = await this.userService.createUser({
-        ...userDto,
-        password: hashPassword,
-        activationLink,
-      });
-      const tokens = this.generateTokens(`${userId}`, userDto);
+      // await this.databaseService.query(
+      //   `INSERT INTO tokens (token, refresh_token, user_id)
+      //     VALUES (?, ?, ?);
+      //   `,
+      //   [tokens.token, tokens.refreshToken, `${userId}`],
+      // );
 
-      await this.databaseService.query(
-        `INSERT INTO tokens (token, refresh_token, user_id)
-          VALUES (?, ?, ?);
-        `,
-        [tokens.token, tokens.refreshToken, `${userId}`],
-      );
+      // await this.mailService.sendMail({
+      //   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //   // @ts-ignore
+      //   to: userDto.email,
+      //   subject: BIRTHDAY_REMINDER_REGISTRATION,
+      //   html: getTemplateRegistartionEmail(activationLink),
+      // });
 
-      await this.mailService.sendMail({
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        to: userDto.email,
-        subject: BIRTHDAY_REMINDER_REGISTRATION,
-        html: getTemplateRegistartionEmail(activationLink),
-      });
-
-      return { user: { id: userId }, tokens };
+      // return { user: { id: userId }, tokens };
     } catch (error) {
       throw error;
     }
