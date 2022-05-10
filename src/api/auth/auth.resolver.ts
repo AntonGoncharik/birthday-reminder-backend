@@ -1,14 +1,16 @@
 import { Resolver, Mutation, Args } from '@nestjs/graphql';
 
 import { AuthService } from './auth.service';
-import { LoginDto } from './dto';
+import { Auth } from './dto';
 
 @Resolver('Auth')
 export class AuthResolver {
   constructor(private authService: AuthService) {}
 
   @Mutation('signup')
-  async signup(@Args() args: LoginDto): Promise<void> {
-    // return this.authService.signup(signupDto);
+  async signup(@Args() payload: Auth): Promise<void> {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    return this.authService.signup(payload.payload);
   }
 }

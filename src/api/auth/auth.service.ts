@@ -5,14 +5,15 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
-import uniqid from 'uniqid';
+import { v4 as uuidv4 } from 'uuid';
 
 import { DatabaseService } from '@database/database.service';
 import { MailService } from '@mail/mail.service';
 import { UsersService } from '@api/users/users.service';
 import { CreateUserDto } from '@api/users/dto';
-import { LoginDto } from './dto';
-import { getTemplateRegistartionEmail } from './templates';
+import { User } from '@api/users/interfaces';
+import { Auth } from './interfaces';
+import { create } from './auth.repository';
 import { BIRTHDAY_REMINDER_REGISTRATION } from './constants';
 
 @Injectable()
@@ -27,14 +28,14 @@ export class AuthService {
   async signin(userDto: CreateUserDto) {
     try {
       const user = await this.validateUserPassword(userDto);
-      const tokens = this.generateTokens(user.id, userDto);
+      const tokens = this.generateTokens(user.id);
 
       await this.databaseService.query(
         `UPDATE tokens
           SET token = ?, refresh_token = ?
           WHERE user_id = ?;
         `,
-        [tokens.token, tokens.refreshToken, `${user.id}`],
+        [tokens.accessToken, tokens.refreshToken, `${user.id}`],
       );
 
       return {
@@ -52,38 +53,33 @@ export class AuthService {
     }
   }
 
-  async signup(signupDto: LoginDto) {
+  async signup(payload: Auth) {
     try {
-      console.log(signupDto);
-      const users = await this.userService.getByEmail(signupDto.email);
+      const user = await this.userService.getByEmail(payload.email);
 
-      // if (users[0]) {
-      //   throw new BadRequestException({
-      //     message: 'User with this email exists',
-      //   });
-      // }
+      if (user) {
+        throw new BadRequestException({
+          message: 'user with this email exists',
+        });
+      }
 
-      // const activationLink = uniqid();
-      // // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // // @ts-ignore
+      const activationLink = uuidv4();
 
-      // const hashPassword = await bcrypt.hash(userDto.password, 5);
-      // // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // // @ts-ignore
+      const hashPassword = await bcrypt.hash(payload.password, 5);
 
-      // const userId = await this.userService.createUser({
-      //   ...userDto,
-      //   password: hashPassword,
-      //   activationLink,
-      // });
-      // const tokens = this.generateTokens(`${userId}`, userDto);
+      const createdUser = await this.userService.createUser({
+        email: payload.email,
+        password: hashPassword,
+        activationLink,
+      });
 
-      // await this.databaseService.query(
-      //   `INSERT INTO tokens (token, refresh_token, user_id)
-      //     VALUES (?, ?, ?);
-      //   `,
-      //   [tokens.token, tokens.refreshToken, `${userId}`],
-      // );
+      const token = this.generateTokens(createdUser);
+
+      const createdToken = await this.databaseService.query(create, [
+        createdUser.id,
+        token.accessToken,
+        token.refreshToken,
+      ]);
 
       // await this.mailService.sendMail({
       //   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -93,7 +89,7 @@ export class AuthService {
       //   html: getTemplateRegistartionEmail(activationLink),
       // });
 
-      // return { user: { id: userId }, tokens };
+      return { user: createdUser, token: createdToken[0] };
     } catch (error) {
       throw error;
     }
@@ -159,19 +155,14 @@ export class AuthService {
         [result[0].user_id],
       );
 
-      const tokens = this.generateTokens(result[0].user_id, {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        email: user[0].email,
-        password: '',
-      });
+      const tokens = this.generateTokens(result[0].user_id);
 
       await this.databaseService.query(
         `UPDATE tokens
           SET token = ?, refresh_token = ?
           WHERE user_id = ?;
         `,
-        [tokens.token, tokens.refreshToken, result[0].user_id],
+        [tokens.accessToken, tokens.refreshToken, result[0].user_id],
       );
 
       return {
@@ -187,13 +178,11 @@ export class AuthService {
     return await this.jwtService.verifyAsync(token, options);
   }
 
-  private generateTokens(userId: string, userDto: CreateUserDto) {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    const payload = { id: userId, email: userDto.email };
+  private generateTokens(user: User) {
+    const payload = { id: user.id, email: user.email };
 
     return {
-      token: this.jwtService.sign(payload, {
+      accessToken: this.jwtService.sign(payload, {
         secret: process.env.JWT_TOKEN_SECRET_KEY,
         expiresIn: process.env.JWT_TOKEN_EXPIRATION_TIME,
       }),
