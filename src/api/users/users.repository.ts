@@ -1,10 +1,13 @@
 export const getByEmail = `
   SELECT 
   id,
-  first_name AS firstName,
-  last_name AS lastName, 
+  first_name AS "firstName",
+  last_name AS "lastName", 
   email,
-  password
+  password,
+  activation_link AS "activationLink",
+  activated,
+  created_at AS "createdAt"
   FROM users
   WHERE email = $1
   LIMIT 1;
@@ -16,10 +19,10 @@ export const create = `
   VALUES ($1, $2, $3)
   RETURNING
   id,
-  first_name,
-  last_name,
+  first_name AS "firstName",
+  last_name AS "lastName",
   email,
-  activation_link,
+  activation_link AS "activationLink",
   activated,
-  created_at;
+  created_at AS "createdAt";
 `;

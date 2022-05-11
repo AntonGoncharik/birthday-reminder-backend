@@ -8,7 +8,7 @@ import { Create, User } from './interfaces';
 export class UsersService {
   constructor(private databaseService: DatabaseService) {}
 
-  async getByEmail(email: string) {
+  async getByEmail(email: string): Promise<User> {
     try {
       const user = await this.databaseService.query(getByEmail, [email]);
 

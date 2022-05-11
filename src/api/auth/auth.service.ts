@@ -12,8 +12,9 @@ import { MailService } from '@mail/mail.service';
 import { UsersService } from '@api/users/users.service';
 import { CreateUserDto } from '@api/users/dto';
 import { User } from '@api/users/interfaces';
-import { Auth } from './interfaces';
+import { Auth, Signup } from './interfaces';
 import { create } from './auth.repository';
+import { getTemplateRegistartionEmail } from './templates';
 import { BIRTHDAY_REMINDER_REGISTRATION } from './constants';
 
 @Injectable()
@@ -53,43 +54,42 @@ export class AuthService {
     }
   }
 
-  async signup(payload: Auth) {
+  async signup(payload: Auth): Promise<Signup> {
     try {
-      const user = await this.userService.getByEmail(payload.email);
+      const existedUser = await this.userService.getByEmail(payload.email);
 
-      if (user) {
+      if (existedUser) {
         throw new BadRequestException({
           message: 'user with this email exists',
         });
       }
 
-      const activationLink = uuidv4();
-
       const hashPassword = await bcrypt.hash(payload.password, 5);
 
-      const createdUser = await this.userService.createUser({
+      const activationLink = uuidv4();
+
+      await this.mailService.sendMail({
+        from: process.env.MAIL_USER,
+        to: payload.email,
+        subject: BIRTHDAY_REMINDER_REGISTRATION,
+        html: getTemplateRegistartionEmail(activationLink),
+      });
+
+      const user = await this.userService.createUser({
         email: payload.email,
         password: hashPassword,
         activationLink,
       });
 
-      const token = this.generateTokens(createdUser);
+      const token = this.generateTokens(user);
 
       const createdToken = await this.databaseService.query(create, [
-        createdUser.id,
+        user.id,
         token.accessToken,
         token.refreshToken,
       ]);
 
-      // await this.mailService.sendMail({
-      //   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      //   // @ts-ignore
-      //   to: userDto.email,
-      //   subject: BIRTHDAY_REMINDER_REGISTRATION,
-      //   html: getTemplateRegistartionEmail(activationLink),
-      // });
-
-      return { user: createdUser, token: createdToken[0] };
+      return { user: user, token: createdToken[0] };
     } catch (error) {
       throw error;
     }
