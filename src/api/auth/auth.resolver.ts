@@ -13,4 +13,11 @@ export class AuthResolver {
     // @ts-ignore
     return this.authService.signup(payload.payload);
   }
+
+  @Mutation('signin')
+  async signin(@Args() payload: Auth): Promise<void> {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    return this.authService.signin(payload.payload);
+  }
 }

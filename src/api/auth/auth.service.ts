@@ -10,10 +10,9 @@ import { v4 as uuidv4 } from 'uuid';
 import { DatabaseService } from '@database/database.service';
 import { MailService } from '@mail/mail.service';
 import { UsersService } from '@api/users/users.service';
-import { CreateUserDto } from '@api/users/dto';
 import { User } from '@api/users/interfaces';
-import { Auth, Signup } from './interfaces';
-import { create } from './auth.repository';
+import { Auth, Signup, Signin } from './interfaces';
+import { create, update } from './auth.repository';
 import { getTemplateRegistartionEmail } from './templates';
 import { BIRTHDAY_REMINDER_REGISTRATION } from './constants';
 
@@ -26,29 +25,36 @@ export class AuthService {
     private databaseService: DatabaseService,
   ) {}
 
-  async signin(userDto: CreateUserDto) {
+  async signin(payload: Auth): Promise<Signin> {
     try {
-      const user = await this.validateUserPassword(userDto);
-      const tokens = this.generateTokens(user.id);
+      const user = await this.userService.getByEmail(payload.email);
 
-      await this.databaseService.query(
-        `UPDATE tokens
-          SET token = ?, refresh_token = ?
-          WHERE user_id = ?;
-        `,
-        [tokens.accessToken, tokens.refreshToken, `${user.id}`],
+      if (!user) {
+        throw new UnauthorizedException({
+          message: 'user with this email does not exist',
+        });
+      }
+
+      const isValidPassword = await this.isValidPassword(
+        payload.password,
+        user.password,
       );
 
-      return {
-        user: {
-          id: user.id,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          email: user.email,
-          avatarPath: user.avatarPath,
-        },
-        tokens,
-      };
+      if (!isValidPassword) {
+        throw new UnauthorizedException({
+          message: 'invalid password',
+        });
+      }
+
+      const token = this.generateTokens(user);
+
+      const createdToken = await this.databaseService.query(update, [
+        token.accessToken,
+        token.refreshToken,
+        user.id,
+      ]);
+
+      return { user: user, token: createdToken[0] };
     } catch (error) {
       throw error;
     }
@@ -59,12 +65,10 @@ export class AuthService {
       const existedUser = await this.userService.getByEmail(payload.email);
 
       if (existedUser) {
-        throw new BadRequestException({
+        throw new UnauthorizedException({
           message: 'user with this email exists',
         });
       }
-
-      const hashPassword = await bcrypt.hash(payload.password, 5);
 
       const activationLink = uuidv4();
 
@@ -74,6 +78,8 @@ export class AuthService {
         subject: BIRTHDAY_REMINDER_REGISTRATION,
         html: getTemplateRegistartionEmail(activationLink),
       });
+
+      const hashPassword = await bcrypt.hash(payload.password, 5);
 
       const user = await this.userService.createUser({
         email: payload.email,
@@ -96,34 +102,35 @@ export class AuthService {
   }
 
   async active(activationLink: string) {
-    try {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      const users = await this.userService.getUserByActivationLink(
-        activationLink,
-      );
+    console.log(activationLink);
+    // try {
+    //   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //   // @ts-ignore
+    //   const users = await this.userService.getUserByActivationLink(
+    //     activationLink,
+    //   );
 
-      if (!users[0]) {
-        throw new BadRequestException({
-          message: 'User not found',
-        });
-      }
+    //   if (!users[0]) {
+    //     throw new BadRequestException({
+    //       message: 'User not found',
+    //     });
+    //   }
 
-      if (users[0].active) {
-        throw new BadRequestException({
-          message: 'User has been activated',
-        });
-      }
+    //   if (users[0].active) {
+    //     throw new BadRequestException({
+    //       message: 'User has been activated',
+    //     });
+    //   }
 
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      await this.userService.updateUser(null, {
-        id: users[0].id,
-        active: 1,
-      });
-    } catch (error) {
-      throw error;
-    }
+    //   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //   // @ts-ignore
+    //   await this.userService.updateUser(null, {
+    //     id: users[0].id,
+    //     active: 1,
+    //   });
+    // } catch (error) {
+    //   throw error;
+    // }
   }
 
   async refresh(authorizationTokens: string) {
@@ -174,7 +181,7 @@ export class AuthService {
     }
   }
 
-  async verify(token: string, options: { secret: string }) {
+  async isValidToken(token: string, options: { secret: string }) {
     return await this.jwtService.verifyAsync(token, options);
   }
 
@@ -193,34 +200,12 @@ export class AuthService {
     };
   }
 
-  private async validateUserPassword(userDto: CreateUserDto) {
+  private async isValidPassword(
+    incomingPassword: string,
+    existedPassword: string,
+  ): Promise<boolean> {
     try {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      const users = await this.userService.getUserByEmail(`${userDto.email}`);
-
-      if (users[0]) {
-        const passwordEquals = await bcrypt.compare(
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          userDto.password,
-          users[0].password,
-        );
-
-        if (passwordEquals) {
-          return {
-            id: users[0].id,
-            firstName: users[0].firstName,
-            lastName: users[0].lastName,
-            email: users[0].email,
-            avatarPath: users[0].avatarPath,
-          };
-        }
-      }
-
-      throw new UnauthorizedException({
-        message: 'Invalid email or password',
-      });
+      return await bcrypt.compare(incomingPassword, existedPassword);
     } catch (error) {
       throw error;
     }
