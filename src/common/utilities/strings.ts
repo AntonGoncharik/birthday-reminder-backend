@@ -12,5 +12,5 @@ export const getSQLUpdate = <T>(id: string, payload: T) => {
     .join(', ');
 
   return `SET ${sqlUpdate}
-          WHERE id = $${Object.keys(payload).length}`;
+          WHERE id = $${Object.keys(payload).length + 1}`;
 };

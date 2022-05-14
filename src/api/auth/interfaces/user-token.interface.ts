@@ -1,7 +1,7 @@
 import { User } from '@api/users/interfaces';
 import { Token } from './token.interface';
 
-export interface Signup {
+export interface UserToken {
   user: User;
   token: Token;
 }

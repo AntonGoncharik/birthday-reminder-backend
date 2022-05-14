@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  UnauthorizedException,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { v4 as uuidv4 } from 'uuid';
@@ -11,8 +7,8 @@ import { DatabaseService } from '@database/database.service';
 import { MailService } from '@mail/mail.service';
 import { UsersService } from '@api/users/users.service';
 import { User } from '@api/users/interfaces';
-import { Auth, Signup, Signin } from './interfaces';
-import { create, update } from './auth.repository';
+import { Auth, UserToken, Redirect } from './interfaces';
+import { create, update, getByRefresh } from './auth.repository';
 import { getTemplateRegistartionEmail } from './templates';
 import { BIRTHDAY_REMINDER_REGISTRATION } from './constants';
 
@@ -25,7 +21,7 @@ export class AuthService {
     private databaseService: DatabaseService,
   ) {}
 
-  async signin(payload: Auth): Promise<Signin> {
+  async signin(payload: Auth): Promise<UserToken> {
     try {
       const user = await this.userService.getByEmail(payload.email);
 
@@ -46,7 +42,7 @@ export class AuthService {
         });
       }
 
-      const token = this.generateTokens(user);
+      const token = await this.generateToken(user);
 
       const createdToken = await this.databaseService.query(update, [
         token.accessToken,
@@ -60,7 +56,7 @@ export class AuthService {
     }
   }
 
-  async signup(payload: Auth): Promise<Signup> {
+  async signup(payload: Auth): Promise<UserToken> {
     try {
       const existedUser = await this.userService.getByEmail(payload.email);
 
@@ -87,7 +83,7 @@ export class AuthService {
         activationLink,
       });
 
-      const token = this.generateTokens(user);
+      const token = await this.generateToken(user);
 
       const createdToken = await this.databaseService.query(create, [
         user.id,
@@ -101,7 +97,7 @@ export class AuthService {
     }
   }
 
-  async active(activationLink: string): Promise<void> {
+  async active(activationLink: string): Promise<Redirect> {
     try {
       const user = await this.userService.getByActivationLink(activationLink);
 
@@ -112,62 +108,50 @@ export class AuthService {
       }
 
       if (user.activated) {
-        throw new UnauthorizedException({
-          message: 'user was activated',
-        });
+        return { url: process.env.UI_URL };
       }
 
       await this.userService.update(user.id, {
         activated: true,
       });
+
+      return { url: process.env.UI_URL };
     } catch (error) {
       throw error;
     }
   }
 
-  async refresh(authorizationTokens: string) {
+  async refreshToken(tokensInput: string): Promise<UserToken> {
     try {
-      const token = authorizationTokens.split(' ')[1];
-      const refreshToken = authorizationTokens.split(' ')[2];
+      const refreshToken = tokensInput.split(' ')[1];
 
-      const result = await this.databaseService.query(
-        `SELECT refresh_token, user_id
-          FROM tokens
-          WHERE refresh_token = ?
-          LIMIT 1;
-        `,
-        [refreshToken],
-      );
+      const existedToken = await this.databaseService.query(getByRefresh, [
+        refreshToken,
+      ]);
 
-      if (!result[0]) {
-        throw new BadRequestException({
-          message: 'Refresh token not found',
+      if (!existedToken[0]) {
+        throw new UnauthorizedException({
+          message: 'refresh token not found',
         });
       }
 
-      const user = await this.databaseService.query(
-        `SELECT email
-          FROM users
-          WHERE id = ?
-          LIMIT 1;
-        `,
-        [result[0].user_id],
-      );
+      const user = await this.userService.getById(existedToken[0].userId);
 
-      const tokens = this.generateTokens(result[0].user_id);
+      if (!user) {
+        throw new UnauthorizedException({
+          message: 'user not found',
+        });
+      }
 
-      await this.databaseService.query(
-        `UPDATE tokens
-          SET token = ?, refresh_token = ?
-          WHERE user_id = ?;
-        `,
-        [tokens.accessToken, tokens.refreshToken, result[0].user_id],
-      );
+      const token = await this.generateToken(user);
 
-      return {
-        user: { id: result[0].user_id },
-        tokens,
-      };
+      const createdToken = await this.databaseService.query(update, [
+        token.accessToken,
+        token.refreshToken,
+        user.id,
+      ]);
+
+      return { user: user, token: createdToken[0] };
     } catch (error) {
       throw error;
     }
@@ -177,18 +161,21 @@ export class AuthService {
     return await this.jwtService.verifyAsync(token, options);
   }
 
-  private generateTokens(user: User) {
+  private async generateToken(user: User) {
     const payload = { id: user.id, email: user.email };
 
+    const accessToken = await this.jwtService.signAsync(payload, {
+      secret: process.env.JWT_TOKEN_SECRET_KEY,
+      expiresIn: process.env.JWT_TOKEN_EXPIRATION_TIME,
+    });
+    const refreshToken = await this.jwtService.signAsync(payload, {
+      secret: process.env.JWT_REFRESH_TOKEN_SECRET_KEY,
+      expiresIn: process.env.JWT_REFRESH_TOKEN_EXPIRATION_TIME,
+    });
+
     return {
-      accessToken: this.jwtService.sign(payload, {
-        secret: process.env.JWT_TOKEN_SECRET_KEY,
-        expiresIn: process.env.JWT_TOKEN_EXPIRATION_TIME,
-      }),
-      refreshToken: this.jwtService.sign(payload, {
-        secret: process.env.JWT_REFRESH_TOKEN_SECRET_KEY,
-        expiresIn: process.env.JWT_REFRESH_TOKEN_EXPIRATION_TIME,
-      }),
+      accessToken,
+      refreshToken,
     };
   }
 

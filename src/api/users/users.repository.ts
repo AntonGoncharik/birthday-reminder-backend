@@ -1,3 +1,18 @@
+export const getById = `
+  SELECT 
+  id,
+  first_name AS "firstName",
+  last_name AS "lastName", 
+  email,
+  password,
+  activation_link AS "activationLink",
+  activated,
+  created_at AS "createdAt"
+  FROM users
+  WHERE id = $1
+  LIMIT 1;
+`;
+
 export const getByEmail = `
   SELECT 
   id,
