@@ -7,6 +7,7 @@ import {
   getByActivationLink,
   create,
   getUpdate,
+  getAll,
 } from './users.repository';
 import { Create, User, Update } from './interfaces';
 import { getSQLUpdate } from '@common/utilities';
@@ -14,6 +15,16 @@ import { getSQLUpdate } from '@common/utilities';
 @Injectable()
 export class UsersService {
   constructor(private databaseService: DatabaseService) {}
+
+  async getAll(): Promise<User[]> {
+    try {
+      const users = await this.databaseService.query(getAll);
+
+      return users;
+    } catch (error) {
+      throw error;
+    }
+  }
 
   async getById(id: string): Promise<User> {
     try {

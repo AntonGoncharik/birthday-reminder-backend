@@ -1,9 +1,23 @@
 type User {
-  id: String!
-  firstName: String!
-  email: String!
+  id: String
+  firstName: String
+  lastName: String
+  email: String
+  activated: Boolean
+  createdAt: String
 }
 
 type Query {
   users: [User]
+  user(id: ID!): User
 }
+
+# input AuthPayload {
+#   email: String!
+#   password: String!
+# }
+
+# type Mutation {
+#   signup(payload: AuthPayload): Auth
+#   signin(payload: AuthPayload): Auth
+# }

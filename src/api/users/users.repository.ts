@@ -1,3 +1,14 @@
+export const getAll = `
+  SELECT 
+  id,
+  first_name AS "firstName",
+  last_name AS "lastName", 
+  email,
+  activated,
+  created_at AS "createdAt"
+  FROM users;
+`;
+
 export const getById = `
   SELECT 
   id,
