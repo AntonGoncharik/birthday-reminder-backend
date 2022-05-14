@@ -13,7 +13,7 @@ export class UsersResolver {
   @Query('users')
   async getUsers() {
     const result = await this.databaseService.query('SELECT * FROM users');
-    console.log(result);
+
     return result;
   }
 }

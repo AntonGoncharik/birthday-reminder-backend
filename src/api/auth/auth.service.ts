@@ -157,8 +157,8 @@ export class AuthService {
     }
   }
 
-  async isValidToken(token: string, options: { secret: string }) {
-    return await this.jwtService.verifyAsync(token, options);
+  isValidToken(token: string, options: { secret: string }) {
+    return this.jwtService.verify(token, options);
   }
 
   private async generateToken(user: User) {

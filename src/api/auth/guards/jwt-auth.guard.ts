@@ -16,28 +16,44 @@ export class JwtAuthGuard implements CanActivate {
   canActivate(
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
-    const { req } = GqlExecutionContext.create(context).getContext();
+    const ctx = GqlExecutionContext.create(context);
+    const gqlContext = ctx.getContext();
+    const gqlReq = ctx.getInfo();
 
-    return true;
-
-    if (req.path.includes('auth')) {
-      return true;
+    // http
+    if (gqlContext.req.route) {
+      if (gqlContext.req.route.path.includes('auth')) {
+        return true;
+      }
+    }
+    // graphql
+    if (gqlReq.path) {
+      if (['signup', 'signin'].includes(gqlReq.path.key)) {
+        return true;
+      }
     }
 
     try {
-      const authHeader = req.headers.authorization;
+      const authHeader = gqlContext.req.headers.authorization;
+
+      if (!authHeader) {
+        throw new UnauthorizedException({
+          message: 'authorization header does not exist',
+        });
+      }
+
       const type = authHeader.split(' ')[0];
       const token = authHeader.split(' ')[1];
 
       if (type !== 'jwt') {
         throw new UnauthorizedException({
-          message: 'Token type is invalid',
+          message: 'token type is invalid',
         });
       }
 
       if (!token) {
         throw new UnauthorizedException({
-          message: 'Token does not exist',
+          message: 'token does not exist',
         });
       }
 
@@ -48,7 +64,7 @@ export class JwtAuthGuard implements CanActivate {
       return true;
     } catch (error) {
       throw new UnauthorizedException({
-        message: `User is not logged in: ${error}`,
+        message: `user is not logged in: ${error}`,
       });
     }
   }
