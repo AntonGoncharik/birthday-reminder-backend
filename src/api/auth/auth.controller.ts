@@ -1,6 +1,7 @@
 import { Controller, Get, Param } from '@nestjs/common';
 
 import { AuthService } from './auth.service';
+import { Active } from './dto';
 
 @Controller('auth')
 export class AuthController {
@@ -8,7 +9,7 @@ export class AuthController {
 
   @Get('/active/:link')
   // @Redirect('http://localhost:3000/auth', 301)
-  active(@Param() params) {
-    this.authService.active(params.link);
+  active(@Param() params: Active) {
+    return this.authService.active(params.link);
   }
 }

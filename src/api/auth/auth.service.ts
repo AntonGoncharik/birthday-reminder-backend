@@ -81,7 +81,7 @@ export class AuthService {
 
       const hashPassword = await bcrypt.hash(payload.password, 5);
 
-      const user = await this.userService.createUser({
+      const user = await this.userService.create({
         email: payload.email,
         password: hashPassword,
         activationLink,
@@ -101,43 +101,35 @@ export class AuthService {
     }
   }
 
-  async active(activationLink: string) {
-    console.log(activationLink);
-    // try {
-    //   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    //   // @ts-ignore
-    //   const users = await this.userService.getUserByActivationLink(
-    //     activationLink,
-    //   );
+  async active(activationLink: string): Promise<void> {
+    try {
+      const user = await this.userService.getByActivationLink(activationLink);
 
-    //   if (!users[0]) {
-    //     throw new BadRequestException({
-    //       message: 'User not found',
-    //     });
-    //   }
+      if (!user) {
+        throw new UnauthorizedException({
+          message: 'user not found',
+        });
+      }
 
-    //   if (users[0].active) {
-    //     throw new BadRequestException({
-    //       message: 'User has been activated',
-    //     });
-    //   }
+      if (user.activated) {
+        throw new UnauthorizedException({
+          message: 'user was activated',
+        });
+      }
 
-    //   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    //   // @ts-ignore
-    //   await this.userService.updateUser(null, {
-    //     id: users[0].id,
-    //     active: 1,
-    //   });
-    // } catch (error) {
-    //   throw error;
-    // }
+      await this.userService.update(user.id, {
+        activated: true,
+      });
+    } catch (error) {
+      throw error;
+    }
   }
 
   async refresh(authorizationTokens: string) {
     try {
       const token = authorizationTokens.split(' ')[1];
       const refreshToken = authorizationTokens.split(' ')[2];
-      console.log(token);
+
       const result = await this.databaseService.query(
         `SELECT refresh_token, user_id
           FROM tokens

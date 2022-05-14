@@ -1,8 +1,14 @@
 import { Injectable } from '@nestjs/common';
 
 import { DatabaseService } from '@database/database.service';
-import { getByEmail, create } from './users.repository';
-import { Create, User } from './interfaces';
+import {
+  getByEmail,
+  getByActivationLink,
+  create,
+  getUpdate,
+} from './users.repository';
+import { Create, User, Update } from './interfaces';
+import { getSQLUpdate } from '@common/utilities';
 
 @Injectable()
 export class UsersService {
@@ -18,13 +24,40 @@ export class UsersService {
     }
   }
 
-  async createUser(payload: Create): Promise<User> {
+  async getByActivationLink(activationLink: string): Promise<User> {
+    try {
+      const user = await this.databaseService.query(getByActivationLink, [
+        activationLink,
+      ]);
+
+      return user[0];
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async create(payload: Create): Promise<User> {
     try {
       const user = await this.databaseService.query(create, [
         payload.email,
         payload.password,
         payload.activationLink,
       ]);
+
+      return user[0];
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async update(id: string, payload: Update): Promise<User> {
+    try {
+      const sqlUpdate = getSQLUpdate(id, payload);
+
+      const user = await this.databaseService.query(
+        getUpdate(sqlUpdate),
+        Object.values(payload),
+      );
 
       return user[0];
     } catch (error) {

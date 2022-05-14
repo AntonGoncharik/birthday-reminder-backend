@@ -13,6 +13,21 @@ export const getByEmail = `
   LIMIT 1;
 `;
 
+export const getByActivationLink = `
+  SELECT 
+  id,
+  first_name AS "firstName",
+  last_name AS "lastName", 
+  email,
+  password,
+  activation_link AS "activationLink",
+  activated,
+  created_at AS "createdAt"
+  FROM users
+  WHERE activation_link = $1
+  LIMIT 1;
+`;
+
 export const create = `
   INSERT INTO users
   (email, password, activation_link)
@@ -22,6 +37,20 @@ export const create = `
   first_name AS "firstName",
   last_name AS "lastName",
   email,
+  activation_link AS "activationLink",
+  activated,
+  created_at AS "createdAt";
+`;
+
+export const getUpdate = (sqlUpdate: string) => `
+  UPDATE users
+  ${sqlUpdate}
+  RETURNING
+  id,
+  first_name AS "firstName",
+  last_name AS "lastName", 
+  email,
+  password,
   activation_link AS "activationLink",
   activated,
   created_at AS "createdAt";
