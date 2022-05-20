@@ -7,12 +7,12 @@ import { User } from './interfaces';
 export class UsersResolver {
   constructor(private usersService: UsersService) {}
 
-  @Query('users')
+  @Query('getUsers')
   async getAll(): Promise<User[]> {
     return this.usersService.getAll();
   }
 
-  @Query('user')
+  @Query('getUser')
   async get(@Args('id') id: string): Promise<User> {
     return this.usersService.getById(id);
   }

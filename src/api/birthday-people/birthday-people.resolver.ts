@@ -8,7 +8,7 @@ import { BirthdayMan } from './interfaces';
 export class BirthdayPeopleResolver {
   constructor(private birthdayPeopleService: BirthdayPeopleService) {}
 
-  @Query('getAllBirthdayPeople')
+  @Query('getBirthdayPeople')
   async getAll(): Promise<BirthdayMan[]> {
     return this.birthdayPeopleService.getAll();
   }
@@ -27,8 +27,13 @@ export class BirthdayPeopleResolver {
 
   @Mutation('updateBirthdayMan')
   async update(@Args() payload: UpdateBirthdayManDto): Promise<BirthdayMan> {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    return this.birthdayPeopleService.update(payload.payload);
+    return this.birthdayPeopleService.update(
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      payload.payload.id,
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      payload.payload,
+    );
   }
 }

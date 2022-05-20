@@ -8,23 +8,25 @@ type BirthdayMan {
 }
 
 type Query {
-  getAllBirthdayPeople: [BirthdayMan]
+  getBirthdayPeople: [BirthdayMan]
   getBirthdayMan(id: ID!): BirthdayMan
 }
 
 input CreateBirthdayMan {
+  userId: String!
   firstName: String!
   lastName: String!
   birthDate: String!
 }
 
 input UpdateBirthdayMan {
+  id: ID!
   firstName: String
   lastName: String
   birthDate: String
 }
 
 type Mutation {
-  createBirthdayMan(payload: CreateBirthdayMan): BirthdayMan
-  updateBirthdayMan(payload: UpdateBirthdayMan): BirthdayMan
+  createBirthdayMan(payload: CreateBirthdayMan!): BirthdayMan
+  updateBirthdayMan(payload: UpdateBirthdayMan!): BirthdayMan
 }
