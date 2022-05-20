@@ -10,6 +10,7 @@ import { DatabaseModule } from '@database/database.module';
 import { AuthModule } from '@api/auth/auth.module';
 import { UsersModule } from '@api/users/users.module';
 import { JwtAuthGuard } from '@api/auth/guards';
+import { BirthdayPeopleModule } from '@api/birthday-people/birthday-people.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { JwtAuthGuard } from '@api/auth/guards';
     }),
     AuthModule,
     UsersModule,
+    BirthdayPeopleModule,
   ],
   providers: [
     {

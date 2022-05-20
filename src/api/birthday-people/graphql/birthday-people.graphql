@@ -1,0 +1,30 @@
+type BirthdayMan {
+  id: String
+  userId: String
+  firstName: String
+  lastName: String
+  birthDate: string
+  createdAt: String
+}
+
+type Query {
+  getAllBirthdayPeople: [BirthdayMan]
+  getBirthdayMan(id: ID!): BirthdayMan
+}
+
+input CreateBirthdayMan {
+  firstName: String!
+  lastName: String!
+  birthDate: string!
+}
+
+input UpdateBirthdayMan {
+  firstName: String
+  lastName: String
+  birthDate: string
+}
+
+type Mutation {
+  createBirthdayMan(payload: CreateBirthdayMan): BirthdayMan
+  updateBirthdayMan(payload: UpdateBirthdayMan): BirthdayMan
+}
