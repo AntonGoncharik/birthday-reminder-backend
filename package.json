@@ -32,6 +32,8 @@
     "@nestjs/graphql": "^10.0.7",
     "@nestjs/jwt": "^8.0.0",
     "@nestjs/platform-express": "^8.0.0",
+    "@sentry/node": "^7.0.0",
+    "@sentry/tracing": "^7.0.0",
     "apollo-server-express": "^3.6.4",
     "bcryptjs": "^2.4.3",
     "class-transformer": "^0.5.1",
