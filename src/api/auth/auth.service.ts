@@ -42,6 +42,12 @@ export class AuthService {
         });
       }
 
+      if (!user.activated) {
+        throw new UnauthorizedException({
+          message: 'user is not activated',
+        });
+      }
+
       const token = await this.generateToken(user);
 
       const createdToken = await this.databaseService.query(update, [
@@ -56,7 +62,7 @@ export class AuthService {
     }
   }
 
-  async signup(payload: Auth): Promise<UserToken> {
+  async signup(payload: Auth): Promise<void> {
     try {
       const existedUser = await this.userService.getByEmail(payload.email);
 
@@ -85,13 +91,11 @@ export class AuthService {
 
       const token = await this.generateToken(user);
 
-      const createdToken = await this.databaseService.query(create, [
+      await this.databaseService.query(create, [
         user.id,
         token.accessToken,
         token.refreshToken,
       ]);
-
-      return { user: user, token: createdToken[0] };
     } catch (error) {
       throw error;
     }
