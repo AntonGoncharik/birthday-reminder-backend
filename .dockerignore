@@ -2,8 +2,10 @@ node_modules
 npm-debug.log
 dist
 db
-Dockerfile.development
-docker-compose.development.yml
+Dockerfile
+docker-compose.yml
+Dockerfile.production
+docker-compose.production.yml
 .git
 .gitignore
 .dockerignore

@@ -1,5 +1,5 @@
 start:
-	docker-compose -f docker-compose.development.yml up --build
+	docker-compose -f docker-compose.yml up --build
 
 stop:
-	docker-compose -f docker-compose.development.yml down
+	docker-compose -f docker-compose.yml down
