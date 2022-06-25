@@ -1,6 +1,6 @@
 type BirthdayMan {
-  id: String
-  userId: String
+  id: ID
+  userId: ID
   firstName: String
   lastName: String
   birthDate: String
@@ -13,7 +13,7 @@ type Query {
 }
 
 input CreateBirthdayMan {
-  userId: String!
+  userId: ID!
   firstName: String!
   lastName: String!
   birthDate: String!
