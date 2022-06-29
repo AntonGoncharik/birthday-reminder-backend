@@ -22,14 +22,26 @@ export const update = `
   created_at AS "createdAt";
 `;
 
-export const getByRefresh = `
+export const getByRefreshToken = `
   SELECT
   id,
   user_id AS "userId",
-  access_token AS "accessToken,
+  access_token AS "accessToken",
   refresh_token AS "refreshToken",
-  created_at AS "createdAt
+  created_at AS "createdAt"
   FROM tokens
   WHERE refresh_token = $1
+  LIMIT 1;
+`;
+
+export const getByAccessToken = `
+  SELECT
+  id,
+  user_id AS "userId",
+  access_token AS "accessToken",
+  refresh_token AS "refreshToken",
+  created_at AS "createdAt"
+  FROM tokens
+  WHERE access_token = $1
   LIMIT 1;
 `;

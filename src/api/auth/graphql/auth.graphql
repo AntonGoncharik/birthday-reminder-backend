@@ -19,4 +19,6 @@ input AuthPayload {
 type Mutation {
   signup(payload: AuthPayload!): Auth
   signin(payload: AuthPayload!): Auth
+  autoSignin(accessToken: String!): Auth
+  refreshToken(refreshToken: String!): Auth
 }

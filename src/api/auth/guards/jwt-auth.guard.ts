@@ -28,7 +28,7 @@ export class JwtAuthGuard implements CanActivate {
     }
     // graphql
     if (gqlReq.path) {
-      if (['signup', 'signin'].includes(gqlReq.path.key)) {
+      if (['signup', 'signin', 'refreshToken'].includes(gqlReq.path.key)) {
         return true;
       }
     }

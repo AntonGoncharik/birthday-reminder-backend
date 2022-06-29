@@ -21,4 +21,18 @@ export class AuthResolver {
     // @ts-ignore
     return this.authService.signin(payload.payload);
   }
+
+  @Mutation('autoSignin')
+  async autoSignin(
+    @Args() payload: { accessToken: string },
+  ): Promise<UserToken> {
+    return this.authService.autoSignin(payload.accessToken);
+  }
+
+  @Mutation('refreshToken')
+  async refreshToken(
+    @Args() payload: { refreshToken: string },
+  ): Promise<UserToken> {
+    return this.authService.refreshToken(payload.refreshToken);
+  }
 }

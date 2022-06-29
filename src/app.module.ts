@@ -30,12 +30,6 @@ import { BirthdayPeopleModule } from '@api/birthday-people/birthday-people.modul
       path: API_URI,
       typePaths: ['./**/*.graphql'],
       playground: process.env.NODE_ENV !== PRODUCTION,
-      formatError: (error: GraphQLError) => {
-        const graphQLFormattedError: GraphQLFormattedError = {
-          message: error.message,
-        };
-        return graphQLFormattedError;
-      },
     }),
     AuthModule,
     UsersModule,

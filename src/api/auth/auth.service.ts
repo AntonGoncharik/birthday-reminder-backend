@@ -8,7 +8,12 @@ import { MailService } from '@mail/mail.service';
 import { UsersService } from '@api/users/users.service';
 import { User } from '@api/users/interfaces';
 import { Auth, UserToken, Redirect } from './interfaces';
-import { create, update, getByRefresh } from './auth.repository';
+import {
+  create,
+  update,
+  getByRefreshToken,
+  getByAccessToken,
+} from './auth.repository';
 import { getTemplateRegistartionEmail } from './templates';
 import { BIRTHDAY_REMINDER_REGISTRATION } from './constants';
 
@@ -39,6 +44,53 @@ export class AuthService {
       if (!isValidPassword) {
         throw new UnauthorizedException({
           message: 'invalid password',
+        });
+      }
+
+      if (!user.activated) {
+        throw new UnauthorizedException({
+          message: 'user is not activated',
+        });
+      }
+
+      const token = await this.generateToken(user);
+
+      const createdToken = await this.databaseService.query(update, [
+        token.accessToken,
+        token.refreshToken,
+        user.id,
+      ]);
+
+      return { user: user, token: createdToken[0] };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async autoSignin(accessToken: string): Promise<UserToken> {
+    try {
+      if (!accessToken) {
+        throw new UnauthorizedException({
+          message: 'access token does not pass',
+        });
+      }
+
+      const existedAccessToken = await this.databaseService.query(
+        getByAccessToken,
+        [accessToken],
+      );
+
+      if (!existedAccessToken.length) {
+        throw new UnauthorizedException({
+          message: 'access token does not exist',
+        });
+      }
+
+      const user = await this.userService.getById(existedAccessToken[0].userId);
+
+      if (!user) {
+        throw new UnauthorizedException({
+          message: 'user not found',
         });
       }
 
@@ -125,11 +177,9 @@ export class AuthService {
     }
   }
 
-  async refreshToken(tokensInput: string): Promise<UserToken> {
+  async refreshToken(refreshToken: string): Promise<UserToken> {
     try {
-      const refreshToken = tokensInput.split(' ')[1];
-
-      const existedToken = await this.databaseService.query(getByRefresh, [
+      const existedToken = await this.databaseService.query(getByRefreshToken, [
         refreshToken,
       ]);
 
