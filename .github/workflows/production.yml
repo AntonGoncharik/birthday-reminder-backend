@@ -70,4 +70,4 @@ jobs:
         run: ${{ env.SSH }} docker-compose -f ${{ env.WORKDIR }}/${{ env.DOCKER_COMPOSE_FILE }} down
 
       - name: Run containers
-        run: ${{ env.SSH }} docker-compose -f ${{ env.WORKDIR }}/${{ env.DOCKER_COMPOSE_FILE }} up -d --build
+        run: ${{ env.SSH }} docker-compose -f ${{ env.WORKDIR }}/${{ env.DOCKER_COMPOSE_FILE }} up -d
