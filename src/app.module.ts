@@ -3,7 +3,6 @@ import { ConfigModule } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { APP_GUARD } from '@nestjs/core';
-import { GraphQLError, GraphQLFormattedError } from 'graphql';
 
 import { PRODUCTION, API_URI } from '@common/constants';
 import { DatabaseModule } from '@database/database.module';
