@@ -21,7 +21,7 @@ services:
       - .production.env
     command: sh -c "/app/node_modules/.bin/db-migrate up"
     depends_on:
-      db:
+      birthday-reminder-postgres:
         condition: service_healthy
   birthday-reminder-server:
     container_name: birthday-reminder-server
@@ -31,7 +31,7 @@ services:
     env_file:
       - .production.env
     depends_on:
-      db:
+      birthday-reminder-postgres:
         condition: service_healthy
-      migration:
+      birthday-reminder-migration:
         condition: service_completed_successfully
