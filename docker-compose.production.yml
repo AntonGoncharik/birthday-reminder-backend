@@ -1,7 +1,7 @@
 version: '3.8'
 services:
-  db:
-    container_name: db
+  birthday-reminder-postgres:
+    container_name: birthday-reminder-postgres
     image: postgres:14.2-alpine
     ports:
       - 8000:5432
@@ -14,8 +14,8 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
-  migration:
-    container_name: migration
+  birthday-reminder-migration:
+    container_name: birthday-reminder-migration
     image: antgoncharik/birthday-reminder-server
     env_file:
       - .production.env
@@ -23,8 +23,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
-  server:
-    container_name: server
+  birthday-reminder-server:
+    container_name: birthday-reminder-server
     image: antgoncharik/birthday-reminder-server
     ports:
       - '8001:3000'
