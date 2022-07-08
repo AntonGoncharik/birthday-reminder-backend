@@ -65,6 +65,16 @@ jobs:
           ${{ env.SSH }} echo 'POSTGRES_DB=${{ secrets.DB_NAME }} >> ${{ env.WORKDIR }}/${{ env.ENV_FILE }}'
           ${{ env.SSH }} echo 'PGPORT=${{ secrets.DB_PORT }} >> ${{ env.WORKDIR }}/${{ env.ENV_FILE }}'
           ${{ env.SSH }} echo 'NODE_ENV=${{ secrets.NODE_ENV }} >> ${{ env.WORKDIR }}/${{ env.ENV_FILE }}'
+          ${{ env.SSH }} echo 'JWT_TOKEN_SECRET_KEY=${{ secrets.JWT_TOKEN_SECRET_KEY }} >> ${{ env.WORKDIR }}/${{ env.ENV_FILE }}'
+          ${{ env.SSH }} echo 'JWT_TOKEN_EXPIRATION_TIME=${{ secrets.JWT_TOKEN_EXPIRATION_TIME }} >> ${{ env.WORKDIR }}/${{ env.ENV_FILE }}'
+          ${{ env.SSH }} echo 'JWT_REFRESH_TOKEN_SECRET_KEY=${{ secrets.JWT_REFRESH_TOKEN_SECRET_KEY }} >> ${{ env.WORKDIR }}/${{ env.ENV_FILE }}'
+          ${{ env.SSH }} echo 'JWT_REFRESH_TOKEN_EXPIRATION_TIME=${{ secrets.JWT_REFRESH_TOKEN_EXPIRATION_TIME }} >> ${{ env.WORKDIR }}/${{ env.ENV_FILE }}'
+          ${{ env.SSH }} echo 'MAIL_HOST=${{ secrets.MAIL_HOST }} >> ${{ env.WORKDIR }}/${{ env.ENV_FILE }}'
+          ${{ env.SSH }} echo 'MAIL_PORT=${{ secrets.MAIL_PORT }} >> ${{ env.WORKDIR }}/${{ env.ENV_FILE }}'
+          ${{ env.SSH }} echo 'MAIL_USER=${{ secrets.MAIL_USER }} >> ${{ env.WORKDIR }}/${{ env.ENV_FILE }}'
+          ${{ env.SSH }} echo 'MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }} >> ${{ env.WORKDIR }}/${{ env.ENV_FILE }}'
+          ${{ env.SSH }} echo 'API_URL=${{ secrets.API_URL }} >> ${{ env.WORKDIR }}/${{ env.ENV_FILE }}'
+          ${{ env.SSH }} echo 'UI_URL=${{ secrets.UI_URL }} >> ${{ env.WORKDIR }}/${{ env.ENV_FILE }}'
 
       - name: Stop containers
         run: ${{ env.SSH }} docker-compose -f ${{ env.WORKDIR }}/${{ env.DOCKER_COMPOSE_FILE }} down
