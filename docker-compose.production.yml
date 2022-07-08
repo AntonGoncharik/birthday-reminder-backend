@@ -14,15 +14,15 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
-  # birthday-reminder-migration:
-  #   container_name: birthday-reminder-migration
-  #   image: antgoncharik/birthday-reminder-server
-  #   env_file:
-  #     - .production.env
-  #   command: sh -c "/app/node_modules/.bin/db-migrate up"
-  #   depends_on:
-  #     birthday-reminder-postgres:
-  #       condition: service_healthy
+  birthday-reminder-migration:
+    container_name: birthday-reminder-migration
+    image: antgoncharik/birthday-reminder-server
+    env_file:
+      - .production.env
+    command: sh -c "/app/node_modules/.bin/db-migrate up"
+    depends_on:
+      birthday-reminder-postgres:
+        condition: service_healthy
   birthday-reminder-server:
     container_name: birthday-reminder-server
     image: antgoncharik/birthday-reminder-server
@@ -33,5 +33,5 @@ services:
     depends_on:
       birthday-reminder-postgres:
         condition: service_healthy
-      # birthday-reminder-migration:
-      #   condition: service_completed_successfully
+      birthday-reminder-migration:
+        condition: service_completed_successfully
