@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { APP_GUARD } from '@nestjs/core';
+import { ScheduleModule } from '@nestjs/schedule';
 
 import { PRODUCTION, API_URI } from '@common/constants';
 import { DatabaseModule } from '@database/database.module';
@@ -10,6 +11,7 @@ import { AuthModule } from '@api/auth/auth.module';
 import { UsersModule } from '@api/users/users.module';
 import { JwtAuthGuard } from '@api/auth/guards';
 import { BirthdayPeopleModule } from '@api/birthday-people/birthday-people.module';
+import { CronModule } from './cron/cron.module';
 
 @Module({
   imports: [
@@ -33,6 +35,8 @@ import { BirthdayPeopleModule } from '@api/birthday-people/birthday-people.modul
     AuthModule,
     UsersModule,
     BirthdayPeopleModule,
+    ScheduleModule.forRoot(),
+    CronModule,
   ],
   providers: [
     {
