@@ -7,11 +7,12 @@ import { ScheduleModule } from '@nestjs/schedule';
 
 import { PRODUCTION, API_URI } from '@common/constants';
 import { DatabaseModule } from '@database/database.module';
+import { MailModule } from '@mail/mail.module';
 import { AuthModule } from '@api/auth/auth.module';
 import { UsersModule } from '@api/users/users.module';
 import { JwtAuthGuard } from '@api/auth/guards';
 import { BirthdayPeopleModule } from '@api/birthday-people/birthday-people.module';
-import { CronModule } from './cron/cron.module';
+import { NotificationModule } from '@notification/notification.module';
 
 @Module({
   imports: [
@@ -32,11 +33,12 @@ import { CronModule } from './cron/cron.module';
       typePaths: ['./**/*.graphql'],
       playground: process.env.NODE_ENV !== PRODUCTION,
     }),
+    MailModule,
     AuthModule,
     UsersModule,
     BirthdayPeopleModule,
     ScheduleModule.forRoot(),
-    CronModule,
+    NotificationModule,
   ],
   providers: [
     {
