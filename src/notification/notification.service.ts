@@ -28,38 +28,34 @@ export class NotificationService {
         [month, day],
       );
 
-      await Promise.all(
-        birthdayPeopleBeforeDay.map(async (item) => {
-          await this.mailService.sendMail({
-            from: process.env.MAIL_USER,
-            to: item.email,
-            subject: 'BIRTHDAY',
-            html: getNotificationHTMLTemplate({
-              rememberDay: 'Tomorrow',
-              firstName: item.first_name,
-              lastName: item.last_name,
-              birthDate: new Date(item.birth_date).toJSON().slice(0, 10),
-              years: item.years,
-            }),
-          });
-        }),
-      );
-      await Promise.all(
-        birthdayPeople.map(async (item) => {
-          await this.mailService.sendMail({
-            from: process.env.MAIL_USER,
-            to: item.email,
-            subject: 'BIRTHDAY',
-            html: getNotificationHTMLTemplate({
-              rememberDay: 'Today',
-              firstName: item.first_name,
-              lastName: item.last_name,
-              birthDate: new Date(item.birth_date).toJSON().slice(0, 10),
-              years: item.years,
-            }),
-          });
-        }),
-      );
+      birthdayPeopleBeforeDay.forEach((item) => {
+        this.mailService.sendMail({
+          from: process.env.MAIL_USER,
+          to: item.email,
+          subject: 'BIRTHDAY',
+          html: getNotificationHTMLTemplate({
+            rememberDay: 'Tomorrow',
+            firstName: item.first_name,
+            lastName: item.last_name,
+            birthDate: new Date(item.birth_date).toJSON().slice(0, 10),
+            years: item.years,
+          }),
+        });
+      });
+      birthdayPeople.forEach((item) => {
+        this.mailService.sendMail({
+          from: process.env.MAIL_USER,
+          to: item.email,
+          subject: 'BIRTHDAY',
+          html: getNotificationHTMLTemplate({
+            rememberDay: 'Today',
+            firstName: item.first_name,
+            lastName: item.last_name,
+            birthDate: new Date(item.birth_date).toJSON().slice(0, 10),
+            years: item.years,
+          }),
+        });
+      });
     } catch (error) {
       throw error;
     }
